@@ -1,0 +1,428 @@
+/* Universal β Predictor webapp v0.1.9 (= v0.1.8 base + 9 directive + ① 修正、 ★Paper4_β_predictor_1) */
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  max-width: 900px; margin: 0 auto; padding: 2em 1em;
+  color: #222; line-height: 1.55;
+}
+header { padding-bottom: 0.8em; }
+header h1 { font-size: 2em; margin: 0 0 0.4em; }
+header .tagline { color: #555; font-size: 1.0em; margin: 0 0 0.7em; }
+header .version { color: #999; font-size: 0.85em; margin: 0.7em 0 0; }
+header .version a { color: #2980b9; text-decoration: none; }
+header .version a:hover { text-decoration: underline; }
+hr.header-sep { border: 0; border-top: 1px solid #e0e0e0; margin: 1.2em 0 1.5em; }
+
+/* v0.1.9 ① 修正: disclosure = full-width frame + text-align center (button style cancelled) */
+.theory-disclosure, .method-disclosure {
+  display: block;
+  width: 100%;
+  margin: 0.6em 0;
+  padding: 0.7em 1.0em;
+  border: 1px solid #cfd8e0;
+  background: #fafbfc;
+  border-radius: 6px;
+  font-size: 0.92em;
+  text-align: center;
+}
+.theory-disclosure summary, .method-disclosure summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #2980b9;
+  list-style: none;
+  padding: 0.25em 0;
+  user-select: none;
+  text-align: center;
+}
+.theory-disclosure summary:hover, .method-disclosure summary:hover { color: #1e6f9f; }
+.theory-disclosure summary::-webkit-details-marker,
+.method-disclosure summary::-webkit-details-marker { display: none; }
+.theory-disclosure .disclosure-arrow, .method-disclosure .disclosure-arrow {
+  display: inline-block;
+  margin-left: 0.3em;
+  color: #555;
+}
+.theory-disclosure[open] .disclosure-arrow,
+.method-disclosure[open] .disclosure-arrow { color: #2980b9; }
+.theory-content, .method-content {
+  padding: 0.8em 0.4em 0.3em;
+  color: #333;
+  text-align: left;
+  margin-top: 0.4em;
+  border-top: 1px dotted #ccc;
+}
+.theory-content p, .method-content p { margin: 0.5em 0; }
+.theory-content p.theory-section-head,
+.method-content p.theory-section-head { font-weight: 700; color: #222; margin-top: 1em; font-size: 1.0em; }
+.theory-content p.formula, .method-content p.formula {
+  font-family: "STIX Two Math", "Latin Modern Math", Cambria, Georgia, serif;
+  font-size: 1.05em; text-align: center;
+  background: #f4f4f6; padding: 0.7em 0.5em; border-radius: 4px; margin: 0.5em 0;
+}
+
+main { margin-top: 1em; }
+section.step { display: none; }
+section.step.active { display: block; }
+section.step h2 { color: #333; }
+
+.hint { color: #666; font-size: 0.95em; }
+.drop-zone {
+  border: 2px dashed #aaa; background: #f8f9fa; padding: 1.4em; text-align: center; border-radius: 6px; margin: 0.6em 0 0.8em;
+}
+.drop-zone.dragover { border-color: #2980b9; background: #e8f4fb; }
+
+.samples { display: flex; flex-wrap: wrap; gap: 0.4em; margin: 0.7em 0; }
+.samples button {
+  padding: 0.5em 0.85em; font-size: 0.92em;
+  border: 1px solid #ccc; background: #f4f4f4; cursor: pointer;
+  border-radius: 4px;
+}
+.samples button:hover { background: #e0e0e0; }
+
+textarea#raw-input, textarea#raw-input-panel {
+  width: 100%; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em; padding: 0.6em; border-radius: 5px; border: 1px solid #ccc;
+  margin: 0.3em 0 0.7em; resize: vertical;
+}
+textarea#raw-input-panel { background: #fafbfc; color: #555; }
+
+button.primary {
+  background: #2980b9; color: #fff; border: 0;
+  padding: 0.75em 1.4em; font-size: 1.0em;
+  cursor: pointer; border-radius: 5px; font-weight: 500;
+}
+button.primary:hover { background: #1e6f9f; }
+button#step2-back, button#step3-export {
+  background: #ddd; color: #333; border: 0;
+  padding: 0.5em 1.0em; border-radius: 5px; cursor: pointer; font-size: 0.93em;
+  margin-right: 0.5em;
+}
+.hidden { display: none; }
+.step3-buttons { margin-top: 1em; display: flex; gap: 0.5em; flex-wrap: wrap; align-items: center; justify-content: center; }
+.analyze-button-wrapper { margin-top: 1.4em; padding-top: 0.4em; text-align: center; }
+.analyze-button-wrapper button.primary { font-size: 1.15em; padding: 0.8em 1.8em; }
+
+button.back-to-top {
+  font-size: 1.6em !important;
+  padding: 0.7em 1.6em !important;
+  background: #2980b9 !important;
+  color: white !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  font-weight: 600;
+  cursor: pointer;
+}
+button.back-to-top:hover { background: #1e6f9f !important; }
+
+pre#preview-table, pre#normalized-data, pre#audit-log {
+  background: #f4f4f4; border: 1px solid #ddd; padding: 0.7em;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.84em; overflow: auto; max-height: 500px; border-radius: 4px;
+}
+.result-banner { padding: 0.7em 1em; border-radius: 5px; margin: 0.8em 0; font-size: 0.95em; }
+.result-banner.success { background: #e7f6ec; border: 1px solid #88c997; color: #1d6b3a; }
+.result-banner.warning { background: #fff8e1; border: 1px solid #e6b850; color: #7c5d00; }
+.result-banner.error { background: #fdecea; border: 1px solid #e88080; color: #8b1f1f; }
+.result-banner.info { background: #e8f4fb; border: 1px solid #88b9d9; color: #1e496f; }
+.result-block { background: #fafbfc; border: 1px solid #d4d4d4; border-radius: 5px; padding: 0.7em 0.9em; margin: 0.6em 0; }
+.result-block table, .label-info table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+.result-block table th, .result-block table td, .label-info table th, .label-info table td { text-align: left; padding: 0.35em 0.6em; border-bottom: 1px solid #e0e0e0; }
+.result-block table th, .label-info table th { background: #f0f0f0; font-weight: 600; }
+.diagnosis { background: #fff5e6; border-left: 3px solid #e67e22; padding: 0.6em 0.9em; margin: 0.6em 0; font-size: 0.92em; color: #5c3f00; }
+
+/* v0.1.9 ⑦: Selected input identifier above result box */
+.selected-input-banner {
+  background: #eef5fb; border: 1px solid #b6d4e8; border-left: 5px solid #2980b9;
+  padding: 0.65em 1.0em; border-radius: 5px; margin: 0.5em 0 1em;
+  font-size: 0.96em; color: #1e496f;
+}
+.selected-input-banner strong { color: #154065; }
+
+.loading { text-align: center; padding: 1.5em; color: #555; }
+.spinner { width: 36px; height: 36px; border: 3px solid #ddd; border-top-color: #2980b9; border-radius: 50%; margin: 0.7em auto; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+footer { color: #555; font-size: 0.92em; margin-top: 3em; border-top: 1px solid #ddd; padding-top: 1.5em; }
+footer h2 { font-size: 1.2em; color: #333; }
+footer ul { padding-left: 1.2em; }
+footer p.constraint { color: #888; font-style: italic; margin-top: 1em; font-size: 0.88em; }
+
+.result-headline {
+  background: #fff8d6; border: 2px solid #ffd93d; border-radius: 8px;
+  padding: 1.2em 1.5em; margin: 1em 0;
+  font-size: 1.5em; text-align: center; font-weight: 600;
+  color: #5c4500;
+}
+.physical-meaning { margin-top: 0.7em; font-size: 0.7em; text-align: left; font-weight: normal; color: #444; line-height: 1.55; }
+.physical-meaning p { margin: 0.5em 0; }
+
+.might-wanna { color: #666; font-size: 2.1em; margin: 1.5em 0 0.6em; font-style: italic; font-weight: 500; line-height: 1.1; }
+.with-method-label { margin: 1.6em 0 0.5em; }
+
+.mode-toggle { display: flex; gap: 0.5em; margin-bottom: 1.5em; }
+.mode-btn {
+  flex: 1; padding: 2.1em 1em; font-size: 1.65em; font-weight: 600;
+  border: 2px solid #ccc; background: #f8f8f8; color: #555;
+  border-radius: 8px; cursor: pointer;
+  text-align: center; line-height: 1.2;
+}
+.mode-btn:hover { background: #ebebeb; }
+.mode-btn.active { border-color: #d57500; background: #ff8c00; color: white; }
+
+.path-toggle { display: flex; gap: 0.5em; margin: 0.6em 0 1.0em; }
+.path-btn {
+  flex: 1; padding: 2.1em 1em; font-size: 1.3em; font-weight: 600;
+  border: 2px solid #ccc; background: #f8f8f8; color: #555;
+  border-radius: 8px; cursor: pointer;
+  text-align: center; line-height: 1.25;
+}
+.path-btn:hover:not([disabled]) { background: #ebebeb; }
+.path-btn.active:not([disabled]) { border-color: #d57500; background: #ff8c00; color: white; }
+.path-btn[disabled] { background: #f0f0f0; color: #bbb; cursor: not-allowed; border-color: #e0e0e0; }
+.path-btn .path-sub { font-size: 0.6em; font-weight: 400; color: inherit; opacity: 0.85; display: block; margin-top: 0.4em; }
+
+.parse-button-wrapper { margin-top: 1.5em; padding-top: 0.5em; }
+.paste-label { color: #666; font-size: 0.9em; margin: 1em 0 0.3em; }
+.samples-mode-label { color: #555; font-size: 0.95em; margin: 1em 0 0.4em; font-weight: 500; }
+
+#inline-preview {
+  margin: 1.2em 0 0;
+  padding: 1.0em 1.1em;
+  border: 1px solid #d4d4d4;
+  border-radius: 6px;
+  background: #fbfcfd;
+}
+#inline-preview h3 { margin: 0 0 0.6em; font-size: 1.0em; color: #333; }
+#inline-preview .preview-summary { font-size: 0.9em; color: #555; margin: 0 0 0.5em; }
+
+/* v0.1.9 ③: Path A no-hint orange info box + Path B label-info (both orange themed) */
+.path-info-box {
+  margin-top: 0.8em; padding: 0.55em 0.85em;
+  background: #fff5e6; border-left: 3px solid #e67e22; border-radius: 3px;
+  font-size: 0.92em; color: #5c3f00;
+}
+.path-info-box.path-a-info {
+  background: #fff8ed; border-left-color: #f0a560;
+  font-style: italic;
+}
+.path-info-box .label-info-header {
+  font-weight: 600; color: #5c3f00; margin-bottom: 0.3em; font-size: 0.92em;
+}
+.path-info-box table { width: 100%; border-collapse: collapse; font-size: 0.92em; margin-top: 0.3em; }
+.path-info-box table th, .path-info-box table td { text-align: left; padding: 0.3em 0.5em; border-bottom: 1px solid #f0e0c0; }
+
+.samples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.6em;
+  margin: 1em 0 1.5em;
+}
+.panel-sample-btn {
+  padding: 0.85em 0.8em; font-size: 0.93em; line-height: 1.3;
+  text-align: left;
+  border: 2px solid #d4d4d4; background: #fafafa; color: #222;
+  border-radius: 6px; cursor: pointer;
+  display: block;
+}
+.panel-sample-btn:hover {
+  border-color: #c4c4c4; background: #f0f0f0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.panel-sample-btn .row-num { display: inline-block; font-weight: 700; color: #2980b9; margin-right: 0.35em; font-size: 1.0em; }
+.panel-sample-btn .row-name { font-weight: 600; color: #222; }
+.panel-sample-btn .row-meta { display: inline-block; color: #777; font-size: 0.82em; margin-top: 0.2em; }
+.panel-sample-btn .row-obs { display: inline-block; color: #aaa; font-size: 0.78em; font-style: italic; }
+.panel-sample-btn.tier-a { border-left: 4px solid #2980b9; }
+.panel-sample-btn.tier-b.mixture {
+  border-left: 4px solid #f0c34f;
+  background: #fffdf5;
+}
+.panel-sample-btn.tier-b.mixture:hover { background: #fffaeb; }
+.panel-sample-btn.selected,
+.panel-sample-btn.selected.tier-a,
+.panel-sample-btn.selected.tier-b.mixture {
+  border: 2px solid #d57500 !important;
+  border-left: 4px solid #d57500 !important;
+  background: #ff8c00 !important;
+  color: white !important;
+  box-shadow: 0 3px 10px rgba(213, 117, 0, 0.35);
+}
+.panel-sample-btn.selected .row-num,
+.panel-sample-btn.selected .row-name,
+.panel-sample-btn.selected .row-meta,
+.panel-sample-btn.selected .row-obs { color: white !important; }
+.samples button.selected {
+  background: #ff8c00 !important; border-color: #d57500 !important;
+  color: white !important; font-weight: 600;
+  box-shadow: 0 2px 6px rgba(213, 117, 0, 0.3);
+}
+.samples-section { margin-top: 1.5em; padding-top: 0.8em; border-top: 1px solid #e0e0e0; }
+.samples-label { color: #555; font-size: 0.9em; margin: 0 0 0.4em; }
+
+
+/* v0.1.10 ⑤: type-warning banner inside #inline-preview must be block + wrap to avoid overflow */
+#type-warning { margin: 0.4em 0; }
+#type-warning .result-banner {
+  display: block;
+  margin: 0.4em 0;
+  padding: 0.55em 0.85em;
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+/* v0.1.10 ②: max-rows error styling */
+.maxrows-error {
+  background: #fdecea; border: 1px solid #e88080; color: #8b1f1f;
+  padding: 0.7em 1em; border-radius: 5px; margin: 0.6em 0;
+  font-weight: 500;
+}
+
+
+/* v0.1.10 (NEW directive): method-disclosure moved below path-toggle, centered, max-width 720 */
+.method-disclosure-wrap {
+  margin: 0.5em auto 1.2em;
+  max-width: 720px;
+  text-align: center;
+}
+.method-disclosure-wrap .method-disclosure { width: 100%; }
+
+
+/* v0.1.12 ①: Back to TOP same row as ③ Results h2, centered, same visual size */
+.step3-header-row {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1em;
+  margin: 0.5em 0 1em;
+}
+.step3-header-row button.back-to-top {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.step3-header-row h2 { margin: 0; font-size: 1.5em; }
+.step3-header-row button.back-to-top {
+  font-size: 1.5em !important;     /* match h2 */
+  padding: 0.35em 1.0em !important;
+  line-height: 1.2 !important;
+}
+
+
+/* v0.1.13 ①: indicator name centered banner (above What IS the indicator? section) */
+.indicator-name-banner {
+  display: block;
+  text-align: center;
+  margin: 0.5em 0 0.8em;
+  padding: 0.5em 0.9em;
+  background: #fff5d6;
+  border: 1.5px solid #e6b850;
+  border-radius: 5px;
+  font-size: 1.0em;
+  font-weight: 600;
+  color: #5c4500;
+}
+.indicator-name-banner .indicator-name-prefix { color: #7c5d00; font-weight: 500; margin-right: 0.4em; }
+.indicator-name-banner .indicator-name-value { font-weight: 700; color: #4a3500; }
+.indicator-name-banner .indicator-name-suffix {
+  display: block;
+  font-size: 0.78em; color: #7c5d00; font-weight: 400; font-style: italic;
+  margin-top: 0.25em;
+}
+
+
+/* v0.1.15 ②: indicator-name inline banner (= placed inside physical-meaning before "What IS" paragraph) */
+.indicator-name-inline {
+  display: block;
+  text-align: center;
+  margin: 0.7em 0 0.7em;
+  padding: 0.4em 0.8em;
+  background: #fff5d6;
+  border: 1px solid #e6b850;
+  border-left: 4px solid #e6b850;
+  border-radius: 4px;
+  font-size: 0.92em;
+  color: #5c4500;
+}
+.indicator-name-inline .indicator-name-prefix { color: #7c5d00; font-weight: 500; margin-right: 0.3em; }
+.indicator-name-inline strong { color: #4a3500; }
+.indicator-name-inline .indicator-name-suffix {
+  display: block;
+  font-size: 0.78em; color: #7c5d00; font-weight: 400; font-style: italic;
+  margin-top: 0.2em;
+}
+
+/* v0.1.15 ①: second Back to TOP button at bottom (centered row, smaller font) */
+.step3-back-bottom-row {
+  display: flex;
+  justify-content: flex-start;
+  margin: 1.5em 0 0.5em;
+}
+.step3-back-bottom-row button.back-to-top {
+  font-size: 1.2em !important;
+  padding: 0.5em 1.3em !important;
+}
+
+
+/* v0.1.16 ⑧: SINGLE-SCREEN MODE — both #step1 and #step3 always visible */
+section.step { display: block !important; }
+
+/* v0.1.16 ⑥: bottom Back to TOP centered */
+.step3-back-bottom-row {
+  display: flex;
+  justify-content: center;
+  margin: 1.5em 0 0.5em;
+}
+
+/* v0.1.16 ③: inline-preview height ≈ textarea half */
+#inline-preview pre#preview-table {
+  max-height: 280px;
+}
+
+/* v0.1.16 ⑧: ↓ Analyze ↓ bigger button */
+button.analyze-big {
+  font-size: 1.4em !important;
+  padding: 0.85em 2.2em !important;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* v0.1.16 ④: H_max (?) info tooltip */
+.info-tooltip {
+  display: inline-block;
+  width: 1.3em; height: 1.3em; line-height: 1.3em;
+  text-align: center;
+  border-radius: 50%;
+  background: #2980b9; color: white;
+  font-size: 0.78em; font-weight: 700;
+  margin-left: 0.3em;
+  cursor: help;
+  position: relative;
+}
+.info-tooltip:hover::after,
+.info-tooltip:focus::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%; left: 50%;
+  transform: translateX(-50%) translateY(-0.4em);
+  width: max-content;
+  max-width: 360px;
+  background: #2c2c2c; color: #fff;
+  padding: 0.65em 0.85em;
+  border-radius: 5px;
+  font-size: 0.85em; font-weight: 400; line-height: 1.45;
+  text-align: left;
+  z-index: 100;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  white-space: normal;
+}
+.info-tooltip:hover::before,
+.info-tooltip:focus::before {
+  content: ""; position: absolute;
+  bottom: 100%; left: 50%;
+  transform: translateX(-50%) translateY(0.2em);
+  border: 6px solid transparent;
+  border-top-color: #2c2c2c;
+  z-index: 101;
+}

@@ -1,85 +1,127 @@
-# Paper 4 — A Relay-Depth Exponent Ladder Closing the Bettencourt 22-Indicator Urban-Scaling Panel
-
-> ⚠️ **Known issues in v1.3 — see [`KNOWN_ISSUES.md`](./KNOWN_ISSUES.md)**
->
-> Five issues identified after the v1.3 deposit are publicly disclosed in `KNOWN_ISSUES.md`:
-> headline "22/22" framing requires three-tier split-reporting; empirical-uniqueness claim for the Kato
-> formula does not reproduce on independent recomputation (near-equivalents exist); self-reported MAE
-> deviates from the verification script's output; Poisson-binomial significance was overstated by ~7
-> orders of magnitude; the auxiliary `sim_paper4_22_22_full_impl_v3.py` script uses integer-rung values
-> inconsistent with the Kato formula. The Kato formula itself, the axiom-derived structural uniqueness,
-> the integer-H ladder structure, and the non-randomness conclusion remain valid. A v1.4 substantive
-> revision is in preparation. For numerical reproduction in the meantime, use
-> `scripts/paper4_numerical_verify.py` (canonical Kato values).
+# Paper 4 â A Relay-Depth Exponent Ladder Closing the Bettencourt 22-Indicator Urban-Scaling Panel
 
 > A Zero-Fitted-Exponent Complementary Closure with Integer, Continuous, and Hybrid Assignments
 
-This repository accompanies the working paper **"A Relay-Depth Exponent Ladder Closing the Bettencourt 22-Indicator Urban-Scaling Panel — A Zero-Fitted-Exponent Complementary Closure with Integer, Continuous, and Hybrid Assignments"** (Paper 4 of the Kato Relay-Depth Working Paper Series).
+This repository accompanies the working paper **"A Relay-Depth Exponent Ladder Closing the Bettencourt 22-Indicator Urban-Scaling Panel â A Zero-Fitted-Exponent Complementary Closure with Integer, Continuous, and Hybrid Assignments"** (Paper 4 of the Kato Relay-Depth Working Paper Series).
 
-## Headline result
+## Headline result (v1.4)
 
-Tested against Bettencourt et al. (PNAS 2007) canonical 22-indicator urban panel, with zero fitted exponents:
+Tested against Bettencourt et al. (PNAS 2007) canonical 22-indicator urban panel via a three-tier decomposition with zero fitted exponents:
 
-- **17 of 22** rows land on a single-integer rung of the relay-depth ladder β±(H) = 1 ± 1/[H ln(2H+1)].
-- **21 of 22** rows fall on a continuous H_eff reading.
-- **22 of 22** rows close under a hybrid H ∈ {2, 3} cluster-mixture protocol (MAE = 0.031, RMSE = 0.045).
-- Pre-registered falsifier: any drop to 21/22 or below at an audited release retires the closure.
+- **12/22** direct strict-integer matches (Tier A scoring rows)
+- **5/22** indirect single-H closures (proxy / residual / reference rows)
+- **5/22** continuous H_eff Tier B rows (mixture closures: Gasoline sales / stations, AIDS, Inventors, Patents-legacy)
+- Three-tier MAE: direct-strict 12-row **0.008**, Tier-A-full 16-row **0.017**, all-22 disclosed **0.015**
+- Random-H ladder selection achieves the 17-row Tier-A-full count with probability **< 10**⁻⁷ across three operational definitions (SI §S-poisson-op-def)
+- Pre-registered falsifiers: (i) direct-strict count ≤ 11/22, (ii) Path-1 bootstrap CI excludes β = 1 for any of the five near-linear indicators
+- USPTO 2010 assignee-level co-inventorship Phase B verification (Stage A graph-derived K detection + (π_low, π_up) mixture weights): K = 2, π_low = 0.943, π_up = 0.057, β_pred = 1.298 against row-17 β_obs = 1.298 [1.198, 1.398] (|Δβ| < 0.001)
+
+## Companion tools (live URLs)
+
+- `tools/paper4/4/` ← <https://aiandfuture.co.jp/tool/4/> — universal β predictor (single-mode legacy, audit reproducibility reference)
+- `tools/paper4/5/` ← <https://aiandfuture.co.jp/tool/5/> — universal β predictor (two-mode primary: Network input + (N, value) panel input)
+- `tools/paper4/8/` ← <https://aiandfuture.co.jp/tool/8/> — interactive browser-based simulator presenting the 22-indicator Bettencourt panel as a clickable reference catalogue with live in-browser cluster analysis on real coordination-network data (USPTO 2010 assignee-level co-inventorship for the patents rows). The simulator implements the registered consistency rule and uses zero fitted exponents; it is offered as a reproducibility-and-demonstration instrument rather than as an external validator.
+
+
+
+## Reproducibility quickstart (post-`git clone`)
+
+After `git clone https://github.com/shota-kato-lab/kato-equation-paper4 && cd kato-equation-paper4`:
+
+### (a) Numerical reproducibility (Python, fully offline)
+
+```bash
+pip install -r scripts/requirements.txt
+
+# 22-row Kato ladder closure + alternative-formula transparency block + Panel-A blind scan
+python scripts/sim_paper4_22_22_full_impl_v4.py
+
+# Random-H Poisson-binomial DP under 3 operational definitions (P < 10^-7 threshold)
+python scripts/poisson_binomial_random_H.py
+
+# Three-tier MAE/RMSE consolidation (0.008 / 0.017 / 0.015)
+python scripts/paper4_mae_rmse_canonical.py
+
+# Independent third-party verification of integer-rung values
+python scripts/paper4_numerical_verify.py
+```
+
+All numerical claims in the paper main text and SI are reproducible from these four scripts. No external data download is required (panel β_obs values are hardcoded per SI §S-PanelOrigins; future processed-data deposit is scheduled per SI §S-data-availability-disclosure).
+
+### (b) Interactive simulator (browser, /tool/8/ equivalent)
+
+The repository ships a byte-identical mirror of the production live webapps under `tools/`:
+
+```bash
+# Serve repo over local HTTP (= avoids browser file:// CORS restrictions for Pyodide)
+python -m http.server 8000
+# Then open in browser:
+#   http://localhost:8000/tools/paper4/8/   ← interactive simulator + USPTO 2010 cluster analysis
+#   http://localhost:8000/tools/paper4/5/   ← two-mode β predictor (primary)
+#   http://localhost:8000/tools/paper4/4/   ← single-mode β predictor (legacy)
+```
+
+Each webapp uses Pyodide (Python in WebAssembly); an internet connection is required on first load to fetch Pyodide wheels (numpy / scipy / networkx / python-louvain) from the Pyodide CDN. Subsequent loads use the browser cache.
+
+`tools/paper4/8/data/` contains the full USPTO 2010 assignee-level co-inventorship network (`uspto_assignee_2010.csv`, 3,951 assignees / 4,526 edges) plus three SNAP collaboration network reference files (`ca-CondMat.txt`, `ca-GrQc.txt`, `ca-HepTh.txt`) for additional cross-network validation. Loading the USPTO 2010 data in `tools/paper4/8/` reproduces, byte-identically with the production live deployment at <https://aiandfuture.co.jp/tool/8/>, the K = 2 detection (Q_{K=2} ≥ 0.20, independent of β_obs), graph-derived mixture weights π_low = 0.943, π_up = 0.057, yielding β_pred = 1.298 against row-17 β_obs = 1.298 [1.198, 1.398] (|Δβ| < 0.001).
+
+### Live demos (no clone required)
+
+For quick reference without cloning, the same webapps are publicly available at:
+
+- <https://aiandfuture.co.jp/tool/4/> — single-mode β predictor (legacy reference)
+- <https://aiandfuture.co.jp/tool/5/> — two-mode β predictor (primary)
+- <https://aiandfuture.co.jp/tool/8/> — interactive simulator with USPTO 2010 cluster analysis
+
+A GitHub Pages mirror (`https://shota-kato-lab.github.io/kato-equation-paper4/tools/paper4/8/` and analogous URLs for tool4 / tool5) may be enabled by the maintainer for stable independent hosting; see the maintainer note at the end of this README.
 
 ## Repository contents
 
 | File / folder | Content |
 |---|---|
-| `main.tex` | Paper 4 manuscript V22.6 (single-file architecture; SI Appendices S-PanelOrigins and S-CrossTimeBeta included inline) |
-| `paper4_V30_refs.bib` / `refs.bib` | BibTeX references (V30: V29 + Bettencourt 2013 / 2020 / 2021 entries injected for the reviewer-reply mechanism / predictions wave) |
-| `paper4_fig_main.png` | Figure 1: Bettencourt 22-Indicator closure forest plot |
-| `fig_2_epsilon_curve.pdf` | Figure 2: ε(H) relay-depth curve |
+| `main.tex` | Paper 4 manuscript V290 (single-file architecture; SI Appendices S-PanelOrigins, S-CrossTimeBeta, S-poisson-op-def, S-epsilon-alternative-rejection, S-axiom-minimality, S-Heff-sensitivity-coordinate, S-data-availability-disclosure, S-path1-microfoundation, S-implementation-notes included inline) |
+| `main.pdf` | Compiled PDF (V290, 91 pages) |
+| `paper4_V30_refs.bib` / `refs.bib` | BibTeX references (V30: V29 + Bettencourt 2013 / 2020 / 2021 entries; full citation chain) |
+| `paper4_fig_main.png` | Figure 1: Bettencourt 22-indicator closure forest plot |
+| `fig_2_epsilon_curve.pdf` | Figure 2: The Relay-Depth Correction Function ε(H) |
 | `significance.tex` | 150-word significance statement |
 | `submission/cover_letter.tex` | Cover letter |
 | `figures/` | Source figures (PNG/PDF) |
-| `scripts/` | Minimal Python reproducibility bundle |
-| `data/` | Placeholder (panel β_obs values hardcoded inline in `scripts/sim_paper4_22_22_full_impl_v3.py`) |
+| `scripts/` | Python reproducibility bundle (sim_v4 + Poisson-binomial DP + canonical MAE/RMSE + verify) |
+| `tools/` | Browser-based companion webapps (tool4 / tool5 / tool8 live URLs above) |
+| `data/` | Placeholder (panel β_obs values are reproducible from public sources per SI §S-data-availability-disclosure; a frozen CSV companion deposit is scheduled within 30 days of acceptance or arXiv release) |
+| `legacy/` | Historical reproducibility audit trail (e.g., `sim_paper4_22_22_full_impl_v3.py` retained for v1.3 → v1.4 transparency per `KNOWN_ISSUES.md`) |
 | `LICENSE` | CC-BY-4.0 (text and figures) |
 | `LICENSE-CODE` | MIT (analysis / simulation code; mirrored as `scripts/LICENSE`) |
-| `.zenodo.json` | Zenodo deposit metadata |
+| `KNOWN_ISSUES.md` | v1.3 errata disclosure + v1.4 full-revision integration note |
+| `MANIFEST.md` | v1.4 bundle manifest (contents + reproducibility status + verification target) |
 
-## Release history
+## Reproducibility scripts (`scripts/`)
 
-- **v1.3 (this release; manuscript V22.6, 2026-05-16)** — Substantive polish wave following the original author's first reply (received 2026-05-16). The two reviewer questions raised in that reply (1) "what is the mechanism, and is it believable?" and (2) "what other predictions does it make?" are now addressed directly in the manuscript body. Mechanism: §1 Introduction and §2.2 establish that the predicted exponent ε(H) = 1/[H ln(2H+1)] arises from a combinatorial-geometric construction (signed alphabet A_H = {−H, …, −1, 0, 1, …, H} of size 2H+1 at each of H coordination rungs; code volume (2H+1)^H by minimality), explicitly not from information-theoretic axioms. Predictions: §3 Discussion adds four falsifiable orthogonal predictions (P1) cross-time-β ladder, (P2) size-dependent variance, (P3) out-of-sample blind exponents, (P4) numerical reconciliation with canonical mean-field exponents. Bettencourt 2013 (Science 340, 1438) derivation flowchart, Bettencourt 2020 (Science Advances eaat8812) stochastic-growth framework, and Bettencourt 2021 (MIT Press, Introduction to Urban Science) are now cited and positioned as the foundational urban-scaling framework that the present ladder is a complementary refinement of. SI Appendix S-PanelOrigins now includes a full 22-row β-independent assignment provenance table (5-column: indicator, network type, substrate constraint, branch, β_obs, agreement rationale; 20/22 Match + 2 Qualified hybrid). Bibliography handle bumped V29 → V30. Central claim (22/22 hybrid closure, MAE 0.031, RMSE 0.045), all figures, scripts, simulation outputs, and the title "Closing the Bettencourt 22-Indicator Urban-Scaling Panel" are unchanged. Layout micro-tuning applied to the SI 22-row table and the title page. Concept DOI 10.5281/zenodo.20145297 redirects to this v1.3 record.
-- v1.2 (manuscript V21.6, 2026-05-16) — Editorial cleanup pass after the v1.0/v1.1 drafts were sent to the original author of the 22-indicator panel. A third-party meta-disclosure audit flagged inadvertent investor-style annotations in those drafts (reference note fields, SI cross-time-beta paragraph, scope-boundary paragraph, and title-page banner). These annotations were removed and the body wording was returned to standard academic phrasing. Author affiliation footer corrected to "AI&Future Co., Ltd." Title verb "Closing" (v1.1) retained; central claim and all numerical content unchanged. Bibliography handle bumped V28 → V29 (reference note-field cleanup only). Now superseded by v1.3 (Bettencourt-reply-driven substance polish).
-- v1.1 (manuscript V207, 2026-05-15) — Withdrawn (deletion request submitted to Zenodo). Title verb refined from "for" (V206) to "Closing" to align with body-text wording. Numerical content unchanged from V206.
-- v1.0 (manuscript V206, 2026-05-12) — Withdrawn (deletion request submitted to Zenodo). Initial closing of Bettencourt's canonical 22-indicator urban panel with a zero-fitted-exponent integer relay-depth ladder β±(H). Versioned DOI 10.5281/zenodo.20145298 (historical anchor).
-- v0.2-internal-polish (not deposited; manuscript V128/V129) — Internal polish wave. Pushed to GitHub as historical tag `v1.1` but no GitHub Release was published; no Zenodo deposit was minted.
-- v0.1-bettencourt (withdrawn; manuscript V105) — Initial Bettencourt outreach deposit. Withdrawn 2026-05-12; Zenodo tombstone 10.5281/zenodo.20111480.
+- `sim_paper4_22_22_full_impl_v4.py` — Kato analytical β±(H) ladder closure + alternative formula transparency block + Panel-A 22-row blind scan
+- `poisson_binomial_random_H.py` — Poisson-binomial DP under three operational definitions (= P < 10⁻⁷ structural threshold for the 17-row Tier-A-full count)
+- `paper4_mae_rmse_canonical.py` — Three-tier MAE/RMSE consolidation (direct-strict 12-row 0.008 / Tier-A-full 16-row 0.017 / all-22 disclosed 0.015)
+- `paper4_numerical_verify.py` — Independent verification of β±(H) integer-rung values and MAE/RMSE (third-party audit replication)
+- `paper4_22_22_full_impl_results.csv` — Pre-computed numerical output for offline review
+- `requirements.txt` — Python dependencies (numpy, scipy, pandas, networkx, python-louvain)
 
-## Reproducibility
+## v1.3 → v1.4 release narrative
 
-This deposit includes a minimal Python reproducibility bundle in `scripts/`:
+**v1.3** (manuscript V22.6, 2026-05-16, Bettencourt first-reply driven polish wave) was sent to Prof. Luis M. A. Bettencourt as the first revised manuscript. After publication, an independent reviewer-anticipation audit (third-party Claude session, 17.5 KB / 8 sections / 5 critical + 2 minor items) surfaced integrity concerns in five locations. The v1.3 release tag is kept as the historical first-disclosure state (PDF md5 `133702eca4f567635567a19312a1c538`); a separate `KNOWN_ISSUES.md` file documents the original five items for full audit traceability.
 
-- `scripts/sim_paper4_22_22_full_impl_v3.py` — central K=2 cluster-mixture closure protocol implementation (Stages 1–3 of Results §3.5–3.6). Reproduces the 17/22 single-integer + 22/22 hybrid closure with hardcoded Bettencourt 2007 PNAS panel values; no external data fetch required. Run: `python3 sim_paper4_22_22_full_impl_v3.py` (deps: numpy, pandas, scipy).
-- `scripts/paper4_numerical_verify.py` — independent re-computation of all β±(H) integer-rung values (H = 1 .. 8), the continuous β±(H_eff) values for the six mixture rows, and the MAE / RMSE on the audited 22-row slice.
+**v1.4** (manuscript V290, 2026-05-26) integrates the five integrity items into the paper and SI as a full revision rather than as a self-disclosure footnote:
 
-The following peripheral pipelines are deferred to a subsequent versioned release:
+- (1) Numerical conventions specified analytically in SI §S-implementation-notes (formerly §S-KNOWN-ISSUES-integrated; rewording per V241 neutral-framing pass)
+- (2) Three-tier MAE/RMSE: 0.008 / 0.017 / 0.015 (canonical per `scripts/paper4_mae_rmse_canonical.py`)
+- (3) Random-H Poisson-binomial: P < 10⁻⁷ for the 17-row Tier-A-full count under three explicit operational definitions
+- (4) 22/22 headline replaced by the three-tier decomposition 12 + 5 + 5 in Abstract, Significance Statement, and Figure 1 caption
+- (5) `scripts/sim_paper4_22_22_full_impl_v4.py` replaces v3 (which is retained under `legacy/` for v1.3 → v1.4 reproducibility transparency)
 
-- USPTO–CBSA 2010 cross-section standalone reconstruction (Paper 4 main-text primary anchor at β_obs = 1.298 [1.198, 1.398]).
-- EOC (Era of Crystallisation) audit bootstrap (n = 10 000) for the SI Appendix S-PanelOrigins window count [18, 22].
+Additional v1.4 substantive additions: SI §S-axiom-minimality (formal 5-Lemma derivation A1-A4 → z(H) = 2H+1), SI §S-Heff-sensitivity-coordinate (Tier B mixing-coordinate framing as ex post diagnostic), SI §S-path1-microfoundation (cross-branch cancellation σ_gc = 0 ⇔ β = 1 for the five near-linear indicators; Path-1 falsifier added), SI §S-data-availability-disclosure (five data assets + 30-day frozen CSV companion deposit schedule), and SI §S-implementation-notes (the v1.3 → v1.4 implementation notes referenced above).
 
-For these pipelines, the manuscript text + SI documents the methodology prose-and-equation; full simulation/audit code is available from the corresponding author upon request.
+The central claim (three-tier 22/22 closure on the Bettencourt 2007 22-indicator panel under the registered consistency rule) and the analytical formula β±(H) = 1 ± 1/[H ln(2H+1)] are unchanged from v1.3. The framework is offered as a complementary refinement of the foundational Bettencourt 2013 / 2020 / 2021 urban-scaling framework, not as a replacement.
 
-## Author
 
-**Shota Kato** — Founder, AI&Future Co., Ltd. (Tokyo, Japan)
+## Maintainer note: GitHub Pages mirror (optional)
 
-ORCID: [0009-0007-6001-3267](https://orcid.org/0009-0007-6001-3267)
-
-## Citation
-
-```
-Kato, S. (2026). A Relay-Depth Exponent Ladder Closing the Bettencourt 22-Indicator Urban-Scaling Panel:
-A Zero-Fitted-Exponent Complementary Closure with Integer, Continuous, and Hybrid Assignments.
-Zenodo. https://doi.org/10.5281/zenodo.20145297 (concept DOI, resolves to latest version).
-```
-
-## License
-
-- Manuscript text and figures: CC-BY-4.0 (`LICENSE`).
-- Reproducibility code: MIT (`LICENSE-CODE`, mirrored as `scripts/LICENSE`).
+The repository can be exposed as a stable browser-accessible mirror by enabling GitHub Pages (Settings → Pages → Source: `main` branch / `/ (root)`). Once enabled, the `tools/paper4/{4,5,8}/` subdirectories become directly accessible at `https://shota-kato-lab.github.io/kato-equation-paper4/tools/paper4/{4,5,8}/`. This is independent of the primary live deployment at `aiandfuture.co.jp/tool/{4,5,8}/` and provides a citation-stable mirror for reviewer access.

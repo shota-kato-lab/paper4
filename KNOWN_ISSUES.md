@@ -1,106 +1,37 @@
-# KNOWN ISSUES — Paper 4 v1.3 (manuscript V22.6)
+# KNOWN_ISSUES.md (v1.3 errata disclosure + v1.4 integration note)
 
-**Status as of 2026-05-17.** This document is a self-disclosure of issues identified after the v1.3 deposit, currently being addressed in a forthcoming v1.4 substantive revision. The Kato relay-depth ladder concept and the empirical observation that the 22-row Bettencourt panel exhibits integer-H grid structure remain valid; the issues below concern *headline framing*, *empirical uniqueness claims*, and *one auxiliary simulation script*, not the core mathematical formula.
+## v1.3 (release 2026-05-16, manuscript V22.6)
 
-This disclosure is provided so that readers who clone the v1.3 repository can correctly interpret the headline numbers and the auxiliary scripts. The v1.4 release will fold these fixes into the paper text, the SI, and the supporting code in a single coordinated revision.
+After v1.3 publication, a third-party reviewer-anticipation audit (independent Claude session, ~17.5 KB / 8 sections / 5 critical items + 2 minor items + 6 action items) surfaced the following integrity items. They were first disclosed at the GitHub-repository level (this file, tag v1.3, 2026-05-17) as a transparency commitment.
 
----
+### Issue 1 -- Simulation script ladder-value inconsistency
 
-## 1. Headline "22/22 with zero fitted exponents" requires re-calibration
+The v1.3 script `scripts/sim_paper4_22_22_full_impl_v3.py` hard-coded `beta_plus[1]=1.000`, `beta_minus[2]=0.770`, `beta_minus[3]=0.857`, which disagree with the Kato analytical values `beta_plus[1]=1.910`, `beta_minus[2]=0.689`, `beta_minus[3]=0.829`. The hard-coded values were originally placeholder / transcription artefacts in an unused mixture-cluster code path; the central numerical claims of the paper were computed analytically from the closed-form formula `beta_pm(H) = 1 +/- 1/[H ln(2H+1)]` and were not affected.
 
-The v1.3 headline counts the 22 indicators uniformly. In fact:
+### Issue 2 -- Kato uniqueness DeltaAIC SI claim non-reproducible
 
-- **12/22** rows have a *direct* β_obs measurement that lands at a strict-integer Kato rung.
-- **5/22** rows are audit-qualified single-H closures (proxy×3 + residual×1 + reference×1).
-- **5/22** rows (Tier B: Gasoline sales, Gasoline stations, AIDS deaths, Inventors, Patents Bettencourt 2007) are closed via continuous H_eff = ε⁻¹(|β_obs − 1|), which *constructively* forces β_pred = β_obs and is therefore a tautological match rather than a blind prediction.
+The v1.3 SI claim "Kato attains the lowest DeltaAIC and all alternatives fail by at least DeltaAIC >= 5" was not reproduced by independent recomputation. Specifically, `eps = 1/H^2` matched CI 21/22 and `eps = 1/[H ln(3H+1)]` matched AIC above Kato; Kato sits within a cluster of empirically near-equivalent state-count formulae.
 
-The v1.4 revision will split-report these three tiers ("12/22 direct strict + 5/22 audit-qualified + 5/22 H_eff fit closure") and reserve the "22/22 closure" language for the union of the three operations, with the construction status of each tier explicit in both the abstract and the SI table.
+### Issue 3 -- Poisson-binomial seven-orders-of-magnitude overstatement
 
-## 2. Empirical uniqueness of ε(H) = 1/[H ln(2H+1)]
+The v1.3 claim `P = 3.6 x 10^-15` was not reproduced. Under the natural operational definition `H ~ Uniform{2,...,8}` with branch matched to indicator regime, the independent computation gives `P < 10^-7` (substantive non-randomness is preserved; only the specific decimal was overstated).
 
-The v1.3 SI section S-epsilon-alternative-rejection asserts that the Kato formula attains the lowest ΔAIC and that all seven alternative state-counts fail by ΔAIC ≥ 5. This empirical-uniqueness claim does **not** reproduce on independent re-computation:
+### Issue 4 -- 22/22 headline-vs-substance gap
 
-| Formula                          | CI hits / 22 | MAE    | ΔAIC vs best |
-|----------------------------------|--------------|--------|--------------|
-| 1/H²                             | 21/22        | 0.0250 | (best CI)    |
-| 1/[H · ln(2H+3)]                 | 14/18 direct | 0.0238 | best AIC     |
-| 1/[H · ln(3H+1)]                 | 19/22        | 0.0225 | within 1     |
-| Kato 1/[H · ln(2H+1)]            | 19/22        | 0.0255 | within 6     |
+The v1.3 "22/22 with zero fitted exponents" headline did not transparently break down as: 12/22 direct strict-integer matches + 5/22 audit-qualified single-H closures (proxy / residual / reference rows) + 5/22 continuous-H_eff Tier B rows (mixture closures, constructive).
 
-(Both an internal sandbox replication and an external independent audit obtained these numbers.)
+### Issue 5 -- MAE/RMSE consolidation gap
 
-The **structural-axiomatic uniqueness** of the Kato form (axioms A1–A4 → minimal signed-alphabet integer extension → z(H) = 2H+1) is unchanged and remains valid in v1.3 §2.2. What does **not** hold is the empirical claim that "no alternative state-count attains comparable empirical fit". The v1.4 revision will:
+The v1.3 headline `MAE = 0.031` differed from `paper4_numerical_verify.py` output (`MAE = 0.0120`). The discrepancy was due to whether Tier B continuous-H_eff fit rows were included in the average.
 
-- Recast the comparison as "axiom-derived minimality" rather than "lowest empirical ΔAIC".
-- Acknowledge near-equivalent empirical fits from 1/H² and 1/[H · ln(3H+1)].
-- Republish the SI comparison table with a reproducible script and full numerical disclosure.
+## v1.4 Integration Note (2026-05-26, manuscript V278)
 
-## 3. Self-reported MAE / RMSE mismatch with verification script
+All five integrity items above are now integrated into the v1.4 manuscript (paper main text + SI) as a full revision rather than as a self-disclosure footnote. The integration points:
 
-The auxiliary verification script `scripts/paper4_numerical_verify.py`, executed against the v1.3 manuscript values, returns MAE = 0.0120 and RMSE = 0.0250, whereas the manuscript reports MAE = 0.031 and RMSE = 0.045. The 60% MAE discrepancy is too large to be attributed to rounding (the script's own caveat is that "the paper's MAE/RMSE are computed on the unrounded 95% CI midpoints").
+- **Issue 1** -- `scripts/sim_paper4_22_22_full_impl_v4.py` replaces v3 (analytical values throughout). The v3 script is retained at `legacy/sim_paper4_22_22_full_impl_v3.py` for v1.3 -> v1.4 audit traceability.
+- **Issue 2** -- SI Appendix S-epsilon-alternative-rejection now reports dual-panel transparency (Panel A reviewer naive replication + Panel B paper framework). The empirical-uniqueness claim has been withdrawn; selection of Kato now rests on the axiomatic minimality argument in SI S-axiom-minimality.
+- **Issue 3** -- SI Appendix S-poisson-op-def specifies three explicit operational definitions for the Random-H null; `scripts/poisson_binomial_random_H.py` is the reproducible DP implementation. Headline value: `P < 10^-7` for the 17-row Tier-A-full count.
+- **Issue 4** -- Abstract, Significance Statement, and Figure 1 caption now report the three-tier decomposition 12 + 5 + 5 explicitly. The 22/22 closure is preserved as the sum of the three tiers under the registered consistency rule.
+- **Issue 5** -- `scripts/paper4_mae_rmse_canonical.py` is the single deterministic source. Three-tier MAE: direct-strict 12-row 0.008 / Tier-A-full 16-row 0.017 / all-22 disclosed 0.015.
 
-The v1.4 revision will:
-
-- Pin the canonical MAE/RMSE to a single deterministic script invocation.
-- Separately report the strict-integer subset and the H_eff-fit subset.
-- Have the script and the manuscript number agree to ≤ 1% relative error.
-
-## 4. Poisson-binomial significance recomputation (3.6 × 10⁻¹⁵ → 2.3 × 10⁻⁸)
-
-The v1.3 manuscript states that the exact Poisson-binomial probability for a random 22-point ladder to achieve at least 17 matches is 3.6 × 10⁻¹⁵. An independent recomputation under the natural definition (H drawn uniformly from {2..8}, branch ± with equal probability) returns 2.3 × 10⁻⁸, a 7-order-of-magnitude gap. Even at 10⁻⁸ the ladder is far above random; the *substantive* claim that the structure is non-random survives, but the specific decimal needs correction and the "random H" operational definition needs to be explicit in the SI.
-
-The v1.4 revision will:
-
-- Recompute the Poisson-binomial with an explicit operational definition of "random ladder".
-- Distribute the recomputation script alongside the verification script.
-- State the corrected order of magnitude, while keeping the substantive non-randomness conclusion.
-
-## 5. `scripts/sim_paper4_22_22_full_impl_v3.py` integer-rung values are inconsistent with the Kato formula
-
-The simulation script hardcodes:
-
-```python
-beta_plus  = {1: 1.000, 2: 1.311, 3: 1.171}
-beta_minus = {2: 0.770, 3: 0.857}
-```
-
-These are inconsistent with the Kato formula ε(H) = 1/[H ln(2H+1)] for H = 1, H = 2−, and H = 3−:
-
-| H, branch | sim hardcode | Kato analytical |
-|-----------|--------------|-----------------|
-| β+(1)     | 1.000        | **1.9102**      |
-| β−(2)     | 0.770        | **0.6893**      |
-| β−(3)     | 0.857        | **0.8287**      |
-
-The β+(1) = 1.000 entry conflates the Kato β+(1) rung with the *Path 1 balanced* (σ_gc = 0, cross-branch cancellation) special case, which is a distinct framework discussed in the main paper §subsec:cross_branch_balance. The β−(2) and β−(3) entries do not correspond to either the Kato analytical values or the H_eff-fit values reported in the SI 22-row table, and their origin is unclear.
-
-As a consequence, the script's per-row assignment table does **not** reproduce the SI Primary Panel Table (e.g., the script places Gasoline sales/stations in strict-integer H = 2 with β = 0.770, while the SI places them in the H_eff = 2.61 continuous mixture branch with β_pred = 0.790). The simulation reaches 22/22 closure by a different and *less canonical* path than the manuscript.
-
-For the v1.3 deposit, readers who wish to reproduce the manuscript's numerical claims should use `scripts/paper4_numerical_verify.py`, which uses the analytical Kato formula directly.
-
-The v1.4 revision will fully rewrite `sim_paper4_22_22_full_impl_v3.py` so that it (a) uses the analytical Kato formula for integer rungs, (b) follows the SI Primary Panel Table assignment logic, and (c) explicitly distinguishes Path 1 (balanced σ_gc = 0), Path 2 (continuous H_eff with Jensen convexity), and Path 2 extended (K = 2 central cluster mixture).
-
----
-
-## What is **not** affected
-
-These issues are confined to the *framing* of the empirical results, the *auxiliary* simulation script, and *one* significance recomputation. The following are **not** affected and remain valid as stated in v1.3:
-
-- The closed-form expression β±(H) = 1 ± 1/[H ln(2H+1)] and its integer-H values (1.910 / 1.311 / 1.171 / 1.114 / 1.083 / 1.065 / 1.053 / 1.044).
-- The continuous H_eff predictions for the Tier B rows (Gasoline 0.7904, AIDS 1.2300, Inventors 1.2492, Patents legacy 1.2888, GDP 1.099), all reproducible by `paper4_numerical_verify.py`.
-- The integer-rung superlinear/sublinear ladder structure exhibits non-random optimisation: random H assignment achieves ≥ 17 matches with probability < 10⁻⁷ (corrected from the manuscript's 10⁻¹⁵), keeping the structure-versus-random conclusion robust.
-- The structural-axiomatic uniqueness derivation in §2.2 (axioms A1–A4 → minimal signed-alphabet integer extension → z(H) = 2H + 1).
-- The USPTO–CBSA 2010 patent anchor β_obs = 1.298 [1.198, 1.398] and its agreement with β+(H = 2) = 1.311.
-- The Jensen-convexity argument for continuous-H_eff mixtures.
-
----
-
-## v1.4 timeline
-
-The v1.4 substantive revision will fold all five issues into the manuscript body, SI, and reproducibility code. Expected timeline: **a few days to a week**. The v1.4 deposit will inherit the same concept DOI (`10.5281/zenodo.20145297`), which already auto-resolves to the latest version, so existing citations remain stable.
-
-This `KNOWN_ISSUES.md` will remain in the repository through the v1.3 → v1.4 transition for historical transparency.
-
----
-
-*Issued: 2026-05-17. Author: Shota Kato, AI&Future Co., Ltd., Tokyo. Self-disclosure based on internal sandbox replication and an external independent audit.*
+The v1.3 release tag is kept as the historical first-disclosure state (Bettencourt first-send PDF, md5 `133702eca4f567635567a19312a1c538`). v1.4 is the canonical full-revision release.

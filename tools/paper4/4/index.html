@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universal β Predictor — Kato Framework / Paper 4 Demo</title>
+<link rel="stylesheet" href="style.css?v=0121">
+</head>
+<body>
+<header>
+  <h1>Universal β Predictor</h1>
+  <p class="tagline">Predict urban scaling exponent β from network structure alone — zero parameters, zero labels (Path A) — Kato Framework Paper 4 companion tool</p>
+  <details class="theory-disclosure">
+    <summary>What is the scaling exponent β and how is it predicted? <span class="disclosure-arrow">▼</span></summary>
+    <div class="theory-content">
+      <p><strong>β</strong> is a number describing how a city-level indicator (e.g., GDP, patent filings, total road length, gasoline consumption) scales with city population at a single point in time. If a city has 10× the population of another, the indicator is approximately 10<sup>β</sup> times larger (e.g., β = 1.1 ⇒ about 12.6× larger). This is <em>not</em> a year-over-year growth rate, but a cross-sectional comparison between cities of different sizes.</p>
+      <p>On this site, we measure β <strong>from network structure alone, with zero parameters and zero labels</strong> (Path A), using a method developed by the author.</p>
+      <p><strong>Notation</strong>: β<sub>pred</sub> = network-based prediction (does <em>not</em> use β<sub>obs</sub>). β<sub>obs</sub> = observation value computed from per-city indicator data (N, Y).</p>
+      <p class="theory-section-head">Foundational theory: Scaling Exponent Hierarchy Law (author's original framework)</p>
+      <p class="formula">β = 1 ± 1 / [H · ln(2H + 1)],&nbsp;&nbsp; H ∈ ℕ</p>
+      <p><strong>H ∈ {1, …, 8}</strong> = relay-depth steps. The number of intermediate hops that people, information, and money traverse when coordinating within a city. H = 1 corresponds to direct, simple coordination; H = 8 represents a deeply stacked hierarchical structure.</p>
+      <p>The integer H and the sign (±) are mathematically determined uniquely by the type of network (city, biological, quantum, etc.) and the physical constraints of the substrate. <strong>No coefficient fitting is performed against observed data.</strong></p>
+      <p>A single relay-depth law connecting integer hierarchy depth H and scaling exponent β. The constraint H ∈ ℕ expresses that hierarchy depth is driven by human population N.</p>
+      <p>This site offers <strong>two analysis paths</strong> — Path A (auto-classify, true blind) and Path B (labeled, with structural hints). When both are valid, the user may choose which path to use (default = Path A).</p>
+    </div>
+  </details>
+  <p class="version">v0.1.21 · Kato Framework · <a href="https://github.com/" target="_blank">source on GitHub</a> · <a href="#about">about</a></p>
+</header>
+
+<hr class="header-sep">
+
+<main>
+
+<section id="step1" class="step active">
+  <p class="might-wanna">You might wanna...</p>
+  <div class="mode-toggle">
+    <button id="mode-upload" class="mode-btn active" data-mode="upload">Upload Original Network Data</button>
+    <button id="mode-panel" class="mode-btn" data-mode="panel">Try Bettencourt's 22 Panel</button>
+  </div>
+
+  <h2>① Upload network data</h2>
+  <p class="hint upload-mode-only">Accepts: edgelist CSV (from_node, to_node), labels CSV, or population–value data (N, Y).</p>
+  <div class="drop-zone upload-mode-only" id="drop">
+    <p>Drag CSV here, or <input type="file" id="file" accept=".csv,.tsv,.txt"></p>
+  </div>
+  <p class="upload-mode-only samples-mode-label">Or try a Bettencourt's 22-panel sample:</p>
+  <p class="panel-mode-only hidden samples-mode-label">Pick a Bettencourt 22-panel sample — raw Bettencourt (N, Y) data lands in the paste area; the synthetic coordination network used for β_pred lands in the preview below:</p>
+
+  <div id="panel-samples-grid" class="samples-grid panel-mode-only hidden"></div>
+  <p class="samples-mode-label" style="margin-top:1.2em;">Or try other sample networks (social, infrastructure, biological):</p>
+  <div class="samples">
+    <button data-sample="answer_data_example">Sample: N–Y answer data (case iii warning)</button>
+    <button data-sample="hint_friend_network">Sample: friend network (30 nodes, balanced, <code>from,to</code>)</button>
+    <button data-sample="hint_coauthor_network">Sample: co-authorship (100 authors, <code>source,target</code>)</button>
+    <button data-sample="hint_power_grid">Sample: power grid (100 substations, <code>from_node,to_node</code>)</button>
+    <button data-sample="hint_twitter_follow">Sample: Twitter follow graph (150 handles, <code>source,target</code>)</button>
+    <button data-sample="bio_vascular_kleiber">Sample: vascular network — Kleiber's law (β≈0.75, H≈2.5)</button>
+    <button data-sample="bio_river_network">Sample: river network — Horton-Strahler (β≈0.83, H=3)</button>
+    <button data-sample="bio_brain_connectome">Sample: brain connectome — Kleiber-like (β≈0.83, H=4 mix)</button>
+    <button data-sample="bio_retina_layered">Sample: retina layered (β≈1.07, H_eff≈6)</button>
+  </div>
+  <p class="upload-mode-only paste-label">Paste CSV content here:</p>
+  <textarea id="raw-input" placeholder="paste CSV content here" rows="14" class="upload-mode-only"></textarea>
+  <p class="panel-mode-only hidden paste-label">Raw Bettencourt data (N, Y per city; click a sample above to load):</p>
+  <textarea id="raw-input-panel" placeholder="(click a sample button above to load Bettencourt's per-city N-Y data)" rows="10" readonly class="panel-mode-only hidden"></textarea>
+
+  <p class="might-wanna with-method-label">Select a method:</p>
+  <div class="path-toggle">
+    <button id="path-a" class="path-btn active" data-path="a">Path A: Auto-classify<br><span class="path-sub">true blind, zero label</span></button>
+    <button id="path-b" class="path-btn" data-path="b" disabled>Path B: Labeled<br><span class="path-sub">with structural hints</span></button>
+  </div>
+
+  <div class="method-disclosure-wrap method-disclosure-wrap-step1">
+  <details class="method-disclosure">
+    <summary>How do these paths predict β from a network? <span class="disclosure-arrow">▼</span></summary>
+    <div class="method-content">
+      <p><strong>Path A — Auto-classify (true blind, zero label).</strong> Given only an edgelist (no panel-level metadata), the detector extracts graph features (degree distribution, average clustering, k-core, Louvain modularity) and runs a 4-step pipeline to recover (network_type, substrate, branch_sign, H_max) → β_pred = β±(H).</p>
+      <p><strong>Path B — Labeled (with structural hints).</strong> User supplies (or the Bettencourt panel sample provides) the structural metadata directly. The detector skips Step 1's auto-classification and uses the labels to seed Steps 2-4. <em>Important</em>: these are <strong>panel-level structural labels</strong>, not per-edge or per-node tags.</p>
+      <p><strong>Note.</strong> Bettencourt panel sample buttons supply a synthetic edgelist mirroring V261 §S-PanelOrigins; β_obs is shown for reference only and never used to compute β_pred. Full 4-step methodology repeated under the result table.</p>
+    </div>
+  </details>
+  </div>
+
+  <div id="inline-preview" class="hidden">
+    <p id="inline-preview-header" class="paste-label">Normalized data preview:</p>
+    <p class="preview-summary">
+      <strong>Detected type:</strong> <span id="detected-type">-</span> &nbsp;|&nbsp;
+      <strong>rows:</strong> <span id="row-count">-</span> &nbsp;|&nbsp;
+      <strong>nodes:</strong> <span id="node-count">-</span>
+    </p>
+    <p id="type-warning"></p>
+    <pre id="preview-table"></pre>
+    <div id="path-a-info-box" class="path-info-box path-a-info hidden">
+      <p>No Hint. No labels such as H_max (max relay-depth), substrate, is_mixture, branch sign (+), or even a name of the network — Path A recovers everything from the bare adjacency list.</p>
+    </div>
+    <div id="path-b-labels-info" class="path-info-box label-info hidden">
+      <p class="label-info-header">Structural labels (Path B hints — used to override auto-classify):</p>
+      <table>
+        <tr><th>Property</th><th>Value</th></tr>
+        <tr><td>H_max <span class="info-tooltip" tabindex="0" data-tooltip="'H' = relay-depth steps. 'H_max' is the maximum H that the network supports. H is the number of intermediate hops that people, information, and money traverse when coordinating within a city. H = 1 corresponds to direct, simple coordination; H = 6 represents a deeply stacked hierarchical structure.">?</span></td><td id="lbl-hmax">-</td></tr>
+        <tr><td>network_type</td><td id="lbl-net">-</td></tr>
+        <tr><td>substrate</td><td id="lbl-sub">-</td></tr>
+        <tr><td>branch_sign</td><td id="lbl-branch">-</td></tr>
+        <tr><td>is_mixture</td><td id="lbl-mix">-</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="analyze-button-wrapper">
+    <button id="step1-go" class="primary analyze-big">↓ Analyze ↓</button>
+  </div>
+</section>
+
+<section id="step3" class="step">
+  <div class="step3-header-row">
+    <h2>③ Results</h2>
+  </div>
+  <div id="loading" class="loading hidden">
+    <p>Running universal β predictor… (Pyodide first load may take 30–60 sec)</p>
+    <div class="spinner"></div>
+  </div>
+
+  <div id="results" class="hidden">
+    <div id="selected-input-banner" class="selected-input-banner hidden">
+      <strong>Selected input:</strong> <span id="selected-input-label">-</span>
+    </div>
+    <div id="result-headline" class="result-headline hidden">
+      <span id="result-headline-text">-</span>
+      <div id="result-physical-meaning" class="physical-meaning"></div>
+    </div>
+    <div class="result-banner" id="result-banner"></div>
+
+    <h3 id="beta-obs-header" class="hidden">β_obs (observed, from answer data)</h3>
+    <div class="result-block hidden" id="beta-obs-result">
+      <p>β_obs = <span id="obs-value">-</span> (OLS log-log regression)</p>
+      <p id="match-verdict"></p>
+    </div>
+
+    <h3 id="mode-a-result-header">Path A — Auto-classify (true blind, zero label)</h3>
+  <div class="method-disclosure-wrap">
+  <details class="method-disclosure">
+    <summary>How do these methods predict β from a network? <span class="disclosure-arrow">▼</span></summary>
+    <div class="method-content">
+      <p><strong>Path A — Auto-classify (true blind, zero label).</strong> Given only an edgelist (no panel-level metadata), the detector extracts graph features (degree distribution, average clustering, k-core, Louvain modularity) and runs a 4-step pipeline:</p>
+      <p>① <strong>Step 0 cluster count.</strong> Louvain modularity Q + module-size distribution + boundary blur + size CV → noise_score ∈ [0, 1]. If Q &lt; 0.2 → single cluster; Q ≥ 0.3 → multi-cluster (Tier B mixture territory).</p>
+      <p>② <strong>Step 1 H_max classification.</strong> From clustering &amp; k-core, infer network_type ∈ {phys_infra, socio_econ, hybrid}, substrate ∈ {area_bounded, volume_bounded, unbounded_dens, mixed}, and integer H_max ∈ {1,…,8}.</p>
+      <p>③ <strong>Step 2 adjacent-pair assumption.</strong> H_pair = {H_max − 1, H_max} (= "hierarchy jump not allowed").</p>
+      <p>④ <strong>Step 3 replicator dynamics.</strong> For mixture rows, solve for mixture weights π_low, π_up using cluster sizes &amp; structural priors.</p>
+      <p>⑤ <strong>Step 4 dual β output.</strong> β_pred_clean = β±(dominant H) (= pure-network prediction). β_pred_contaminated = β±(H_eff) where H_eff = π_low · H_low + π_up · H_up (= mixture-aware prediction). The bracketing interval [β_clean, β_contaminated] reports the noise-direction span.</p>
+      <p><strong>Path B — Labeled (with structural hints).</strong> User supplies (or the Bettencourt panel sample provides) the structural metadata directly: network_type, substrate, branch_sign (+/−/balanced), H_max ∈ {1,…,8}, is_mixture (boolean). The detector skips Step 1's auto-classification and uses the labels to seed Steps 2-4. <em>Important</em>: these are <strong>panel-level structural labels</strong> (one set per indicator row, e.g., "this row is a socio-econ unbounded-density row at H=2, +-branch"), not per-edge or per-node tags.</p>
+      <p><strong>Important note on data semantics.</strong> The Bettencourt 22-panel sample buttons supply a <em>synthetic edgelist</em> (configured to mirror the structural type each indicator implies, per V261 §S-PanelOrigins) plus the panel-level labels. The synthetic graph is built only from network type / substrate / branch / H_max — it never reads β_obs. Bettencourt's original 2007 data are the per-city (N, Y) pairs, summarized only as β_obs ± CI in this tool's UI; they are <strong>not</strong> used to compute β_pred.</p>
+      <p><strong>What does "zero label" actually mean?</strong> In Path A, zero label = zero structural hint (no H, no network_type, no branch sign, not even a name) — the detector recovers everything from the bare adjacency list. Path B trades that blindness for one extra structural hint set, giving a more direct β_pred for that panel row but losing the "blind discovery" claim.</p>
+    </div>
+  </details>
+  </div>
+    <div class="result-block" id="mode-a-result">
+      <table>
+        <tr><th>Quantity</th><th>Value</th><th>Description</th></tr>
+        <tr><td>clean β_pred</td><td id="a-clean">-</td><td>Pure-network prediction = β±(dominant H)</td></tr>
+        <tr><td>contaminated β_pred</td><td id="a-contam">-</td><td>Mixture prediction = β±(H_eff)</td></tr>
+        <tr><td>H_max</td><td id="a-hmax">-</td><td>From graph metrics (Path A) or panel label (Path B)</td></tr>
+        <tr><td>H_eff (scalar)</td><td id="a-heff">-</td><td>= π_low · H_low + π_up · H_up (mixture-weighted relay depth)</td></tr>
+        <tr><td>cluster count</td><td id="a-cluster">-</td><td>From Louvain modularity</td></tr>
+        <tr><td>noise score (0–1)</td><td id="a-noise-score">-</td><td>Cluster quality multi-metric</td></tr>
+        <tr><td>noise flag</td><td id="a-noise-flag">-</td><td>True ⇒ asymmetric / blurry cluster boundary</td></tr>
+        <tr><td>π_imbalance</td><td id="a-pi-imbalance">-</td><td>max(π_low, π_up); &gt; 0.80 ⇒ sub-flag (= aux warning)</td></tr>
+        <tr><td>sub_noise_flag</td><td id="a-sub-flag">-</td><td>π asymmetry-based "be cautious" sub-indicator</td></tr>
+        <tr><td>bracketing interval</td><td id="a-bracket">-</td><td>[min, max] of (clean, contaminated) — registered consistency interval per GPT P0</td></tr>
+      </table>
+      <p id="a-noise-diagnosis" class="diagnosis"></p>
+    </div>
+    <h3>Normalized data used (transparency)</h3>
+    <pre id="normalized-data" class="normalized"></pre>
+
+    <h3>Audit log (β_obs blind during compute)</h3>
+    <pre id="audit-log"></pre>
+
+    <div class="step3-buttons">
+      <button id="step3-export">Export JSON</button>
+    </div>
+    <div class="step3-back-bottom-row">
+      <button id="step3-back-bottom" class="primary back-to-top">Go To Top</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer id="about">
+  <h2>About</h2>
+  <p>This tool implements the <strong>Universal β predictor</strong> from the Kato Framework (Paper 4: <em>A Relay-Depth Exponent Ladder Closing the Bettencourt 22-Indicator Urban-Scaling Panel</em>).</p>
+  <p>The framework reaches a <strong>22/22 closure</strong> on the Bettencourt 2007 22-indicator panel (synthetic by-construction; real data verification in progress).</p>
+  <p>References: paper PDF / Zenodo deposit / GitHub source. Author: Shota Kato (AI &amp; Future Co · Independent research).</p>
+  <p class="constraint">Privacy: this page runs entirely in your browser (Pyodide). No data is uploaded to any server.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script src="app.js?v=0121"></script>
+</body>
+</html>

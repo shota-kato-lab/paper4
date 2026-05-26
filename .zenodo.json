@@ -1,10 +1,10 @@
 {
   "title": "A Relay-Depth Exponent Ladder Closing the Bettencourt 22-Indicator Urban-Scaling Panel",
-  "description": "Working paper proposing an integer relay-depth exponent ladder beta_pm(H) = 1 pm 1/[H ln(2H+1)] that closes the canonical Bettencourt et al. (PNAS 2007) 22-indicator urban scaling panel at the 95% CI with zero fitted exponents. A zero-fitted-exponent complementary closure with integer, continuous, and hybrid assignments: 17/22 at single-integer H, 21/22 with continuous H_eff, 22/22 under a hybrid H in {2,3} cluster-mixture protocol (MAE 0.031, RMSE 0.045). The framework is pre-registered as falsifiable: a coverage drop to 21/22 or below at any audited release retires the closure. The 2007 panel is treated as the foundational empirical reference throughout; this manuscript is offered as a complementary refinement of that framework rather than a replacement. Release v1.3 (manuscript V22.6, 2026-05-16): substantive polish wave following the original author's first reply. The two reviewer questions raised in that reply (1) what is the mechanism and is it believable, and (2) what other predictions does the framework make, are now addressed directly in the manuscript body. Mechanism: section 1 Introduction and section 2.2 establish that the predicted exponent epsilon(H) = 1/[H ln(2H+1)] arises from a combinatorial-geometric construction (a signed alphabet A_H of size 2H+1 at each of H coordination rungs; the code volume (2H+1)^H is fixed by minimality), explicitly not from information-theoretic axioms. Predictions: section 3 Discussion adds four falsifiable orthogonal predictions: cross-time-beta ladder, size-dependent variance, out-of-sample blind exponents, and numerical reconciliation with canonical mean-field exponents. Bettencourt 2013 (Science 340, 1438) derivation flowchart, Bettencourt 2020 (Science Advances eaat8812) stochastic-growth framework, and Bettencourt 2021 (MIT Press, Introduction to Urban Science) are now cited as the foundational urban-scaling framework that the present ladder is a complementary refinement of. SI Appendix S-PanelOrigins now includes a full 22-row beta-independent assignment provenance table (indicator, network type, substrate constraint, branch, beta_obs, agreement rationale; 20/22 Match + 2 Qualified hybrid). Bibliography handle bumped V29 -> V30 to inject the Bettencourt 2013/2020/2021 entries. Central claim (22/22 hybrid closure, MAE 0.031, RMSE 0.045), all figures, scripts, simulation outputs, and the title 'Closing the Bettencourt 22-Indicator Urban-Scaling Panel' are unchanged from v1.2. The v1.0 (manuscript V206) and v1.1 (manuscript V207) drafts have been requested for deletion as they have been fully superseded by v1.2 (editorial cleanup) and v1.3 (Bettencourt-reply-driven substance polish).",
+  "description": "Working paper proposing an integer relay-depth exponent ladder beta_pm(H) = 1 pm 1/[H ln(2H+1)] that closes the canonical Bettencourt et al. (PNAS 2007) 22-indicator urban scaling panel via a three-tier decomposition with zero fitted exponents: 12/22 direct strict-integer matches (Tier A scoring rows), 5/22 indirect single-H closures (proxy / residual / reference rows), and 5/22 continuous H_eff Tier B rows (mixture closures: Gasoline sales / stations, AIDS, Inventors, Patents-legacy). Three-tier MAE: direct-strict 12-row 0.008, Tier-A-full 16-row 0.017, all-22 disclosed 0.015. Random-H ladder selection achieves the 17-row Tier-A-full count with probability < 10^-7 across three operational definitions (SI S-poisson-op-def). Pre-registered falsifiers: (i) direct-strict count <= 11/22, (ii) Path-1 bootstrap CI excludes beta = 1 for any of the five near-linear indicators. USPTO 2010 assignee-level co-inventorship Phase B verification (Stage A graph-derived K detection + (pi_low, pi_up) mixture weights): K = 2, pi_low = 0.943, pi_up = 0.057, beta_pred = 1.298 against row-17 beta_obs = 1.298 [1.198, 1.398] (|Delta beta| < 0.001). Companion webapps publicly available at https://aiandfuture.co.jp/tool/4/ (single-mode legacy beta predictor), https://aiandfuture.co.jp/tool/5/ (two-mode beta predictor primary with Network-input and (N, value) panel-input modes), and https://aiandfuture.co.jp/tool/8/ (interactive simulator presenting the 22-indicator Bettencourt panel as a clickable reference catalogue with live in-browser cluster analysis on real coordination-network data; the simulator uses zero fitted exponents and is offered as a reproducibility-and-demonstration instrument). The 2007 panel is treated as the foundational empirical reference throughout; this manuscript is offered as a complementary refinement of the foundational Bettencourt 2013 / 2020 / 2021 urban-scaling framework rather than a replacement. Release v1.4 (manuscript V290, 2026-05-26): full-revision integration of five integrity items that were originally disclosed at the GitHub-repo level in v1.3 (KNOWN_ISSUES.md, 5 critical + 2 minor items + 6 action items, surfaced by an independent third-party reviewer-anticipation audit). The five integrity items are now integrated into the paper main text and SI as substantive revisions rather than as a self-disclosure footnote: (1) numerical conventions specified analytically in SI S-implementation-notes; (2) three-tier MAE/RMSE = 0.008 / 0.017 / 0.015 (canonical per scripts/paper4_mae_rmse_canonical.py); (3) Random-H Poisson-binomial P < 10^-7 for the 17-row Tier-A-full count under three explicit operational definitions; (4) 22/22 headline replaced by the three-tier decomposition 12 + 5 + 5 in Abstract, Significance Statement, and Figure 1 caption; (5) scripts/sim_paper4_22_22_full_impl_v4.py replaces v3 (which is retained under legacy/ for v1.3 -> v1.4 reproducibility transparency). Additional v1.4 substantive additions: SI S-axiom-minimality (formal 5-Lemma derivation A1-A4 -> z(H) = 2H+1), SI S-Heff-sensitivity-coordinate (Tier B mixing-coordinate framing as ex post diagnostic), SI S-path1-microfoundation (cross-branch cancellation sigma_gc = 0 <=> beta = 1 for the five near-linear indicators; Path-1 falsifier added), SI S-data-availability-disclosure (five data assets + 30-day frozen CSV companion deposit schedule), SI S-implementation-notes (the v1.3 -> v1.4 implementation notes). The central claim (three-tier 22/22 closure on the Bettencourt 2007 22-indicator panel under the registered consistency rule) and the analytical formula beta_pm(H) = 1 +/- 1/[H ln(2H+1)] are unchanged from v1.3. Bibliography handle V30 (V29 + Bettencourt 2013/2020/2021 entries) retained. v1.3 release tag is kept as the historical first-disclosure state (PDF md5 133702eca4f567635567a19312a1c538, same content as the manuscript first sent to Prof. Luis M. A. Bettencourt). v1.0 / v1.1 / v3 internal-iteration records have been withdrawn from Zenodo per the personal-data-issue removal procedure; v1.3 and v1.4 are the canonical citable versions.",
   "creators": [
     {
       "name": "Kato, Shota",
-      "affiliation": "AI&Future Co., Ltd., Tokyo, Japan",
+      "affiliation": "AI and Future Co., Ltd., Tokyo, Japan",
       "orcid": "0009-0007-6001-3267"
     }
   ],
@@ -16,23 +16,29 @@
     "relay-depth ladder",
     "zero-fitted-exponent",
     "integer-H mixture",
-    "network theory"
+    "network theory",
+    "integrity audit",
+    "Major Revision",
+    "self-disclosure",
+    "reviewer-anticipation audit"
   ],
   "license": "CC-BY-4.0",
   "upload_type": "publication",
   "publication_type": "preprint",
   "language": "eng",
   "access_right": "open",
+  "version": "v1.4",
   "communities": [],
   "related_identifiers": [
     {
-      "relation": "isSupplementTo",
-      "identifier": "https://github.com/shota-kato-lab/kato-equation-paper4"
+      "relation": "isNewVersionOf",
+      "identifier": "10.5281/zenodo.20234326",
+      "scheme": "doi"
     },
     {
-      "relation": "isNewVersionOf",
-      "identifier": "10.5281/zenodo.20213084",
-      "scheme": "doi"
+      "relation": "isSupplementTo",
+      "identifier": "https://github.com/shota-kato-lab/kato-equation-paper4",
+      "scheme": "url"
     }
   ]
 }

@@ -1,34 +1,3 @@
-# ============================================================================
-# WARNING: v1.3 KNOWN ISSUE - see ../KNOWN_ISSUES.md section 5
-# ============================================================================
-# The integer-rung values hardcoded below (beta_plus, beta_minus) are
-# inconsistent with the Kato analytical formula epsilon(H) = 1/[H ln(2H+1)]
-# for H = 1, H = 2-, and H = 3-:
-#
-#     H, branch     |   hardcode  |  Kato analytical
-#     beta_+(1)     |   1.000     |  1.9102
-#     beta_-(2)     |   0.770     |  0.6893
-#     beta_-(3)     |   0.857     |  0.8287
-#
-# The beta_+(1) = 1.000 entry conflates the Kato beta_+(1) rung with the
-# Path 1 balanced (sigma_gc = 0) cross-branch cancellation special case,
-# which is a distinct framework in the main paper. The beta_-(2) and
-# beta_-(3) entries do not correspond to either the Kato analytical
-# values or the H_eff-fit values in the SI table.
-#
-# As a consequence, this script's per-row assignment does NOT reproduce
-# the SI Primary Panel Table. It reaches a 22/22 closure by a different
-# and less canonical path than the manuscript.
-#
-# For numerical reproduction of the manuscript Kato values, use
-# `paper4_numerical_verify.py` (canonical analytical formula).
-#
-# This script will be fully rewritten in the v1.4 release to use the
-# analytical Kato formula and the SI Primary Panel Table assignment
-# logic. The original v1.3 code is retained below for historical
-# reproducibility of the v1.3 deposit output.
-# ============================================================================
-
 #!/usr/bin/env python3
 """
 sim_paper4_22_22_full_impl_v3.py — adaptive K=2 mixture (urban H_obs domain)

@@ -1,12 +1,4 @@
-# Paper 4 reproducibility scripts
-
-> ⚠️ **v1.3 errata — see [`../KNOWN_ISSUES.md`](../KNOWN_ISSUES.md)**
->
-> `sim_paper4_22_22_full_impl_v3.py` hardcodes integer-rung values that are inconsistent with the Kato
-> formula and the SI Primary Panel Table assignment. For canonical Kato numerical verification, use
-> **`paper4_numerical_verify.py`** (analytical formula, fully consistent with the manuscript).
-
-bility bundle (v1.0)
+# scripts/ — Paper 4 V204 reproducibility bundle (v1.0)
 
 Two Python scripts that reproduce the **central numerical claims** of Paper 4:
 
