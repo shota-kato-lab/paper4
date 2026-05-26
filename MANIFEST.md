@@ -1,16 +1,16 @@
-# Paper 4 v1.4 (V290) Reproducibility Bundle Manifest
+# Paper 4 v1.4 Reproducibility Bundle Manifest
 
 Build date: 2026-05-26
-Manuscript: V290 (91 pages, 2.22 MB PDF)
+Manuscript: v1.4 (91 pages, 2.22 MB PDF)
 Zenodo concept: 10.5281/zenodo.20234326 (v1.3 -> v1.4)
-GitHub: shota-kato-lab/kato-equation-paper4 (tag v1.4)
+GitHub: shota-kato-lab/paper4 (tag v1.4)
 
 ## Bundle contents
 
 ### Core deliverables
 
-- `main.tex` -- V290 LaTeX source (446 KB, ~4000 lines)
-- `main.pdf` -- V290 compiled PDF (91 pages, 2.22 MB)
+- `main.tex` -- LaTeX source (v1.4) (446 KB, ~4000 lines)
+- `main.pdf` -- compiled PDF (v1.4) (91 pages, 2.22 MB)
 - `paper4_V30_refs.bib` / `refs.bib` -- BibTeX references (V30: V29 + Bettencourt 2013 / 2020 / 2021)
 - `significance.tex` -- 150-word significance statement
 - `submission/cover_letter.tex` -- Cover letter
@@ -43,14 +43,13 @@ GitHub: shota-kato-lab/kato-equation-paper4 (tag v1.4)
 
 - `README.md` -- repository contents + headline result + v1.3 -> v1.4 release narrative
 - `MANIFEST.md` -- this file
-- `KNOWN_ISSUES.md` -- v1.3 errata disclosure + v1.4 integration note
 
 ## Reproducibility status
 
 - All five SI integrity-fix sections present in main.tex (S-PanelOrigins, S-CrossTimeBeta, S-poisson-op-def, S-epsilon-alternative-rejection, S-axiom-minimality, S-Heff-sensitivity-coordinate, S-data-availability-disclosure, S-path1-microfoundation, S-implementation-notes)
 - 3 reproducibility scripts (sim_v4 + poisson_binomial_random_H + paper4_mae_rmse_canonical) cover all numerical claims in main + SI
-- meta-disclosure 11 banned pattern body-only: paper4_16 audit V8+ verified per V231 -> V241 -> V276 -> V290 cleanup chain
-- page 1 single-page convergence: V290 maintains the V264 baseline structure
+- meta-disclosure 11 banned pattern body-only: paper4_16 audit V8+ verified per v1.3 -> v1.4 cleanup chain
+- page 1 single-page convergence: v1.4 maintains the page-1 baseline structure
 
 ## Verification target
 
@@ -64,4 +63,4 @@ GitHub: shota-kato-lab/kato-equation-paper4 (tag v1.4)
 
 ## v1.3 -> v1.4 transition note
 
-v1.3 (V22.6, 2026-05-16) was the first manuscript sent to Prof. Luis M. A. Bettencourt; the same PDF (md5 133702eca4f567635567a19312a1c538) is preserved at Zenodo record 10.5281/zenodo.20234326. After publication, a third-party reviewer-anticipation audit surfaced five integrity items that were disclosed in the GitHub-repo-level KNOWN_ISSUES.md file. v1.4 (V290, 2026-05-26) integrates those items into the paper main text and SI as a full revision; KNOWN_ISSUES.md is retained as a v1.4 integration note.
+v1.3 (V22.6, 2026-05-16) was the first manuscript sent to Prof. Luis M. A. Bettencourt; the same PDF (md5 133702eca4f567635567a19312a1c538) is preserved at Zenodo record 10.5281/zenodo.20234326. After publication, a third-party reviewer-anticipation audit surfaced five integrity items that were disclosed in the GitHub-repo-level KNOWN_ISSUES.md file. v1.4 (2026-05-27) integrates those items into the paper main text and SI as a full revision; the v1.3 tag history serves as the integration reference.

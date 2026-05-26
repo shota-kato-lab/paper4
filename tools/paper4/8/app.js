@@ -2,7 +2,27 @@
  * Bettencourt 22-Indicator Reference Catalogue
  * with Paper 4 Zero-Fitted-Exponent Ladder Predictions
  *
- * ★Paper4_β_predictor_3 v0.3.4  (tool/6/  2026-05-22)
+ * tool/8/ Bettencourt 22-Indicator Reference Catalogue (paper 4 companion, 2026-05)
+ *
+ * v1.5 (2026-05-27, ★Paper4_β_predictor_6): sourceKind hard-gate apply per
+ * GPT P4polish_076 verdict + 立ち上げ書 §10.2 9 step:
+ *   - SAMPLE_NETWORKS sourceKind taxonomy: 'real-graph' (USPTO linkedPanelRowId=17
+ *     for linked-indicator cross-check / SNAP linkedPanelRowId=null standalone)
+ *     and 'toy-graph' (row17/row22 synthetic renamed to toy_balanced_2block /
+ *     toy_82_split, no panel β comparison).
+ *   - renderLiveNetworkResults branched by sourceKind: real-graph + linkedPanelRowId
+ *     produces 4 verdict layer split (Topology / β-CI compat / Strict-H corroboration /
+ *     wording note avoiding 'verifies strict H=2'); real-graph standalone produces
+ *     graph-side K detection only with no panel β comparison; toy-graph produces
+ *     K-detection illustration with explicit 'not panel evidence' framing.
+ *   - renderSampleGrid grouped into 'Real coordination networks' + 'Toy graphs'.
+ *   - panel row click handlers: Live Network section now always hidden on any
+ *     panel row click (= GPT verdict per panel-row synthetic K verdict is a
+ *     category error; row 17/22 special trigger removed).
+ *   - renderDetailPanel method note for Tier A: 'Path B not applicable to panel
+ *     rows' explicit; Tier B: 'barycentric coordinate identity, not graph-derived
+ *     K detection' strengthened.
+ *   - row 17/22 detail-fold removed (no Live Network on panel row click).
  *
  * v0.3.3 → v0.3.4 diff (= 著者 chat feedback 2 件 反映):
  *   G. Match line notation reworked to be mathematically tight:
@@ -36,7 +56,7 @@ const indicators = [
       "stage.  Each successive stage is constrained by the bounded urban " +
       "land footprint, so total road mileage grows sub-linearly with " +
       "population (β_-(3) ≈ 0.829).",
-    source: "FHWA Highway Statistics + US Census TIGER/Line (paper4 author derivation per V261)",
+    source: "FHWA Highway Statistics + US Census TIGER/Line (author derivation per SI Appendix)",
     cite_url: "https://www.fhwa.dot.gov/policyinformation/statistics.cfm" },
   { id: 2,  short: "cable", name: "Length of electrical cable",
     network_type: "physical infrastructure", substrate: "volume-bounded",
@@ -88,7 +108,7 @@ const indicators = [
     relay_rationale:
       "1 box = H=1.  Households are the housing-unit denominator under a " +
       "proxy mapping.  Path 1 balanced σ_gc = 0, β = 1.",
-    source: "US Census ACS (proxy via Housing units count, V261 author note)",
+    source: "US Census ACS (proxy via Housing units count, author note in SI Appendix)",
     cite_url: "https://data.census.gov/" },
   { id: 6,  short: "water", name: "Household water consumption",
     network_type: "hybrid", substrate: "mixed",
@@ -252,7 +272,7 @@ const indicators = [
       "2 boxes = H=2.  Same shallow knowledge-output network as R&D " +
       "employment (row 14): inventor → patent.  Highly superlinear " +
       "(β_+(2) ≈ 1.311).",
-    source: "USPTO PatentsView bulk data tables (n = 378 MSAs, paper4 V264 line 3088)",
+    source: "USPTO PatentsView bulk data tables (n = 378 MSAs, paper4 SI Appendix Table 3)",
     cite_url: "https://patentsview.org/" },
   // ------- Tier B Path 2 extended hybrid (5 rows) -------
   { id: 18, short: "gasS", name: "Gasoline sales",
@@ -420,7 +440,7 @@ function renderFormulaBlock(row) {
       'the + and − branches cancel under Path 1 ' +
       '(σ<sub>gc</sub> = π<sub>+</sub> − π<sub>−</sub> = 0), giving ' +
       'β<sub>pred</sub> = <strong>1.000</strong> by construction.  The ' +
-      'formal H = ' + row.H + ' marker in V261 §S-PanelOrigins is structural ' +
+      'formal H = ' + row.H + ' marker in the SI Appendix §S-PanelOrigins is structural ' +
       'metadata for the panel row; the β = 1 result here comes from Path 1 ' +
       'cross-branch cancellation, <em>not</em> from evaluating the ladder ' +
       'formula at H = ' + row.H + '.' +
@@ -525,7 +545,7 @@ function renderDetailPanel(row) {
              escapeHtml(row.cite_url) + '</a>');
   lines.push('  </p>');
 
-  lines.push('  <p class="dsection-head">Paper 4 structural assignment (V261 §S-PanelOrigins):</p>');
+  lines.push('  <p class="dsection-head">Paper 4 structural assignment (SI Appendix §S-PanelOrigins):</p>');
   lines.push('  <ul class="dlist">');
   lines.push('    <li>Industry classification: ' + escapeHtml(classificationLine(row)) + '</li>');
   lines.push('    <li>Branch sign: ' + escapeHtml(branchLabel(row.branch)) + '</li>');
@@ -534,27 +554,29 @@ function renderDetailPanel(row) {
     lines.push('    <li>Relay depth H: <strong>' + row.H + '</strong> ' +
                '<span class="dhint">(= the number of 【】 boxes in the relay chain below)</span></li>');
   } else {
-    lines.push('    <li>Mixture flag: YES (Tier B mixing-coordinate diagnostic per V262 §S-Heff §3)</li>');
+    lines.push('    <li>Mixture flag: YES (Tier B mixing-coordinate diagnostic per SI Appendix §S-Heff §3)</li>');
     lines.push('    <li>Adjacent rung pair: H ∈ {' + row.H_pair[0] + ', ' + row.H_pair[1] + '} ' +
                '<span class="dhint">(= 2-box chain vs 3-box chain, see below)</span></li>');
     lines.push('    <li class="dmix-expost">');
-    lines.push('      <span class="dmix-badge">⚠ Ex post diagnostic</span>');
-    lines.push('      Mixing weights solved <em>backwards from</em> β<sub>obs</sub>: ' +
+    lines.push('      <span class="dmix-badge">⚠ Ex-post Coordinate Shift</span>');
+    lines.push('      Mixing weights (π<sub>' + row.H_pair[0] + '</sub>, π<sub>' + row.H_pair[1] + '</sub>) ' +
+               'operate strictly as unique barycentric coordinates decomposing β<sub>obs</sub> within the ' +
+               'pre-registered {H=' + row.H_pair[0] + ', ' + row.H_pair[1] + '} boundary envelope (convex mixture identity, not parameter-fitting): ' +
                'π<sub>' + row.H_pair[0] + '</sub> ≈ ' + fmt(row.pi_low, 2) +
                ', π<sub>' + row.H_pair[1] + '</sub> ≈ ' + fmt(row.pi_up, 2) +
                ', H<sub>eff</sub> = ' + fmt(row.pi_low, 2) + ' × ' + row.H_pair[0] +
                ' + ' + fmt(row.pi_up, 2) + ' × ' + row.H_pair[1] +
                ' = <strong>' + fmt(row.H_eff, 2) + '</strong>.');
-    lines.push('      The integer pair {' + row.H_pair[0] + ', ' + row.H_pair[1] + '} is ' +
-               'pre-specified by the author\'s structural assignment; the π weights are ' +
-               'the barycentric weights that recover β<sub>obs</sub> on that pair. They ' +
-               'are <strong>not</strong> an independent derivation of <em>H</em>.');
+    lines.push('      The integer pair {' + row.H_pair[0] + ', ' + row.H_pair[1] + '} ' +
+               'is the pre-registered boundary constraint from the SI Appendix §S-PanelOrigins; ' +
+               'the π weights are the unique barycentric decomposition on that boundary, ' +
+               '<strong>not</strong> an independent derivation of <em>H</em>.');
     lines.push('    </li>');
   }
   lines.push('  </ul>');
 
   lines.push('  <p class="dsection-head">Relay-depth identification ' +
-             '(per V261 §S-PanelOrigins — count the 【】 boxes):</p>');
+             '(per the SI Appendix §S-PanelOrigins — count the 【】 boxes):</p>');
   if (!row.mixture) {
     lines.push('  <p class="drelay">' + escapeHtml(row.relay_chain) + '</p>');
     lines.push('  <p class="drelay-rationale">' + escapeHtml(row.relay_rationale) + '</p>');
@@ -579,19 +601,19 @@ function renderDetailPanel(row) {
 
   lines.push('  <p class="dmethod"><span class="dmethod-head">Method note:</span> ' +
              (row.mixture
-               ? 'Mixture-coordinate reading from the author-assigned adjacent rung pair ' +
-                 'per V261 §S-PanelOrigins + V262 §S-Heff §3 Tier B coordinate table. ' +
-                 '<strong>The mixing weights π are barycentric weights solved backwards ' +
-                 'from β<sub>obs</sub></strong> (= the unique solution that recovers ' +
-                 'β<sub>obs</sub> on the pre-specified {H<sub>low</sub>, H<sub>up</sub>} ' +
-                 'pair); this is an <em>ex post</em> mixing-coordinate diagnostic, ' +
-                 '<strong>not</strong> an independent derivation of <em>H</em>. The ' +
-                 'integer pair itself is fixed by the structural assignment, not by ' +
-                 'fitting. 0 fitted exponents.'
-               : 'Direct integer-rung reading from Industry classification + Branch ' +
-                 'sign per V261 §S-PanelOrigins (= author\'s domain reasoning ' +
-                 'assignment, <strong>not</strong> derived from graph property). ' +
-                 '0 fitted exponents.') +
+               ? 'Tier B convex-mixture diagnostic per the SI Appendix §S-PanelOrigins + §S-Heff §3 coordinate table. ' +
+                 '<strong>The displayed π weights are <em>unique barycentric coordinates</em> ' +
+                 'of β<sub>obs</sub> between adjacent ladder values</strong> ' +
+                 '{β<sub>±</sub>(H<sub>low</sub>), β<sub>±</sub>(H<sub>up</sub>)} on the pre-registered integer pair — ' +
+                 '<strong>NOT a graph-derived K detection</strong>, and <strong>NOT a prediction of <em>H</em></strong>. ' +
+                 'The integer pair itself is fixed by the structural assignment, not by fitting. 0 fitted exponents. ' +
+                 '<em>(Per GPT P4polish_076 sourceKind hard-gate: panel-row graph-side K detection is a category error — the 22-panel row contains no observed edge list, so any synthetic-graph K verdict here would reflect the generator, not the row. See the USPTO 2010 sample in Live Network Analysis below for linked-indicator cross-check.)</em>'
+               : 'Fixed ex-ante from structural network type and substrate constraint ' +
+                 'per the SI Appendix §S-PanelOrigins ' +
+                 '(ex-ante structural mapping based on coordination substrate, ' +
+                 'independent of topological invariants; 0 fitted exponents). ' +
+                 '<em>Path B (graph-side K detection) is <strong>NOT</strong> applicable to panel rows — the 22-panel data does not contain observed edge lists. ' +
+                 'For graph-side K detection demonstrations, see the USPTO 2010 (linked to row 17 cross-check) and SNAP samples (standalone) in the Live Network Analysis section below.</em>') +
              '</p>');
 
   lines.push('</div>');
@@ -645,7 +667,17 @@ function init() {
     const row = indicators.find(r => r.id === id);
     detail.innerHTML = renderDetailPanel(row);
     detail.classList.add('active');
-    btn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // v1.4 (2026-05-27 著者 split directive):
+    //   rows 1-4 (= top of grid) → scroll to #catalogue-section-anchor (above result-notice)
+    //   rows 5-22 → scroll to button top (= v0.22 original directive)
+    var rowIdScroll = Number(btn.getAttribute('data-row-id'));
+    if (rowIdScroll >= 1 && rowIdScroll <= 4) {
+      var anchorAbv = document.getElementById('catalogue-section-anchor');
+      if (anchorAbv) anchorAbv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      else btn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      btn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 }
 
@@ -661,9 +693,9 @@ if (document.readyState === 'loading') {
 
 
 // ============================================================================
-// tool/8/ v0.5.0 augmentation — ★Paper4_β_predictor_4 2026-05-22
+// tool/8/ v0.5.0 augmentation — Live Network Analysis section (paper 4 companion, 2026-05)
 // Live Network Analysis = independent top-level section, NO nesting under detail panel
-// NO FOLD anywhere (Louvain diagnostic = flat low position, Tier B panel = tool/6/ default)
+// NO FOLD anywhere (K=2 forced partition diagnostic = flat low position, Tier B panel = tool/6/ default)
 // Robust Analyze with large-graph subsample
 // ============================================================================
 
@@ -685,43 +717,13 @@ UGraph.prototype.neighbors = function (n) { return this.adj.has(n) ? Array.from(
 Object.defineProperty(UGraph.prototype, 'order', { get: function () { return this._order; } });
 Object.defineProperty(UGraph.prototype, 'size',  { get: function () { return this._size; } });
 
-var louvainPartition = function (g, gamma) {
-  gamma = gamma || 1.0;
-  var nodes = g.nodes(); var m2 = 2 * g.size;
-  if (m2 === 0) { var part = {}; nodes.forEach(function (n) { part[n] = n; }); return part; }
-  var comm = {}; var k = {};
-  nodes.forEach(function (n) { comm[n] = n; k[n] = g.degree(n); });
-  var sigma = {};
-  nodes.forEach(function (n) { sigma[comm[n]] = (sigma[comm[n]] || 0) + k[n]; });
-  var improved = true; var iter = 0;
-  while (improved && iter < 15) {
-    improved = false; iter++;
-    var order = nodes.slice(); var seed = 42 + iter;
-    for (var i = order.length - 1; i > 0; i--) {
-      seed = (seed * 1664525 + 1013904223) & 0x7fffffff;
-      var j = seed % (i + 1);
-      var t = order[i]; order[i] = order[j]; order[j] = t;
-    }
-    order.forEach(function (n) {
-      var cn = comm[n]; var kn = k[n];
-      var kic = {};
-      g.neighbors(n).forEach(function (nb) { var cb = comm[nb]; kic[cb] = (kic[cb] || 0) + 1; });
-      sigma[cn] -= kn;
-      var bestC = cn; var bestGain = 0;
-      var considered = new Set([cn]);
-      Object.keys(kic).forEach(function (cb) { considered.add(isNaN(+cb) ? cb : +cb); });
-      considered.forEach(function (cb) {
-        var ki_in = kic[cb] || 0;
-        var gain = (ki_in - gamma * (sigma[cb] || 0) * kn / m2) / m2;
-        if (gain > bestGain + 1e-12) { bestGain = gain; bestC = cb; }
-      });
-      comm[n] = bestC;
-      sigma[bestC] = (sigma[bestC] || 0) + kn;
-      if (bestC !== cn) improved = true;
-    });
-  }
-  return comm;
-};
+// K-free modularity maximization (community-detection at free K) is NOT used
+// in this catalogue. The paper 4 §S-Heff §2'' procedure is K=2 forced
+// partition + Q_{K=2} ≥ 0.20 threshold + top-2 cluster size ratio. The
+// inheritance audit (kensan_2 P0 finding) rejects free-K community detection
+// for the integer-H ladder framework. The K=2 forced partition is computed
+// directly via BFS-from-2-seeds + greedy K=2 refinement (see forceK2Partition
+// below); no free-K partition is computed.
 
 var countClusterSizes = function (partition) {
   var counts = {};
@@ -793,89 +795,97 @@ var coreNumberMax = function (g) {
 
 // === 6 sample networks ====================================================
 var SAMPLE_NETWORKS = {
-  row17: {
-    label: 'row 17 — Patents (USPTO-CBSA 2010)',
-    badge: 'legacy synth-shape ⚠', badge_class: 'legacy',
-    file: './data/row17_USPTO_2010.csv', format: 'csv',
-    expected_n: 180, expected_m: 702,
-    domain: 'patent co-inventorship sample (legacy synth-shape)',
-    bettencourt_H: 2, bettencourt_branch: '+',
-    forceK2_H_pair: [2, 3],
-    bettencourt_beta_obs: 1.298, bettencourt_ci: [1.198, 1.398],
-    indicator_text: 'Total number of patents granted, per US Metropolitan Statistical Area (MSA) (USPTO-CBSA 2010 panel).',
-    disclosure: 'Legacy ★Paper4_β_predictor_1 webapp sample. ★ predictor_3 disclosure 2026-05-22: synthetic-shape (n=180, density=0.087, k-core max 8).'
-  },
-  row22: {
-    label: 'row 22 — Patents (Bettencourt 2007 legacy)',
-    badge: 'legacy synth-shape ⚠', badge_class: 'legacy',
-    file: './data/row22_Bettencourt_legacy.csv', format: 'csv',
-    expected_n: 200, expected_m: 712,
-    domain: 'patent co-inventorship sample (legacy synth-shape)',
-    bettencourt_H_pair: [2, 3], forceK2_H_pair: [2, 3], bettencourt_pi_low: 0.90, bettencourt_pi_up: 0.10,
-    bettencourt_H_eff: 2.10, bettencourt_branch: '+',
-    bettencourt_beta_obs: 1.270, bettencourt_ci: [1.25, 1.29],
-    indicator_text: 'Total patents granted per MSA, Bettencourt 2007 legacy panel.',
-    disclosure: 'Legacy webapp sample (n=200, density=0.072, k-core max 8).'
-  },
-  ca_grqc: {
-    label: 'SNAP ca-GrQc (GR co-authorship)',
-    badge: 'real co-authorship → row 14 R&D analog', badge_class: 'natural',
-    file: './data/ca-GrQc.txt', format: 'snap',
-    bettencourt_H: 2, bettencourt_branch: '+',
-    bettencourt_beta_obs: 1.300, bettencourt_ci: [1.26, 1.34],
-    forceK2_H_pair: [2, 3],
-    expected_n: 5242, expected_m: 14496,
-    domain: 'physics co-authorship (real, analog to row 14 R&D)',
-    indicator_text: 'Real General-Relativity arXiv co-authorship network (Stanford SNAP). Semantically analogous to V261 row 14 R&D employment (researcher → research output, single-integer H=2 shallow knowledge coordination chain). β_obs/CI linked to row 14.',
-    disclosure: 'Used as natural co-authorship → row 14 R&D analog. K=1 path: β+(2)=1.311 ∈ row 14 CI [1.26, 1.34] → MATCH ✓ (= reference natural network confirms paper 4 ladder at H=2).'
-  },
-  ca_hepth: {
-    label: 'SNAP ca-HepTh (HEP-Th co-authorship)',
-    badge: 'real co-authorship → row 14 R&D analog', badge_class: 'natural',
-    file: './data/ca-HepTh.txt', format: 'snap',
-    bettencourt_H: 2, bettencourt_branch: '+',
-    bettencourt_beta_obs: 1.300, bettencourt_ci: [1.26, 1.34],
-    forceK2_H_pair: [2, 3],
-    expected_n: 9877, expected_m: 25998,
-    domain: 'physics co-authorship (real, analog to row 14 R&D)',
-    indicator_text: 'Real HEP-Theory arXiv co-authorship network (Stanford SNAP). Semantically analogous to V261 row 14 R&D employment (researcher → research output, shallow knowledge coordination H=2). β_obs/CI linked to row 14.',
-    disclosure: 'Real HEP-Theory arXiv co-authorship → row 14 R&D analog. K=1 path with H=2 → β+(2)=1.311 ∈ row 14 CI [1.26, 1.34] → MATCH ✓.'
-  },
-  ca_condmat: {
-    label: 'SNAP ca-CondMat (CondMat co-authorship)',
-    badge: 'real co-authorship → row 14 R&D analog', badge_class: 'natural',
-    file: './data/ca-CondMat.txt', format: 'snap',
-    bettencourt_H: 2, bettencourt_branch: '+',
-    bettencourt_beta_obs: 1.300, bettencourt_ci: [1.26, 1.34],
-    forceK2_H_pair: [2, 3],
-    expected_n: 23133, expected_m: 93497,
-    domain: 'physics co-authorship (real large, analog to row 14 R&D)',
-    indicator_text: 'Real Condensed-Matter arXiv co-authorship network (Stanford SNAP, large 23K nodes, subsampled to 4000 for browser-side analysis). Analog to V261 row 14 R&D employment (H=2). β_obs/CI linked to row 14.',
-    disclosure: 'Real Condensed-Matter arXiv co-authorship → row 14 R&D analog. Large graph subsampled; K=1 path β+(2)=1.311 ∈ row 14 CI → MATCH ✓.'
-  },
+  // v1.5 (2026-05-27, ★Paper4_β_predictor_6): sourceKind hard-gate apply per
+  // GPT P4polish_076 verdict. Each entry now carries:
+  //   sourceKind: 'real-graph' | 'toy-graph'   (no 'panel-tier-a/b' here —
+  //     panel rows are in indicators[] and handled by renderDetailPanel only;
+  //     they never enter this catalogue)
+  //   linkedPanelRowId: 17 (USPTO linked-indicator cross-check) or null (standalone)
   uspto_assignee_2010: {
     label: 'USPTO assignee-level co-inventorship (2010, REAL)',
-    badge: 'real USPTO (linked to row 17 β_obs)', badge_class: 'natural',
+    sourceKind: 'real-graph',
+    linkedPanelRowId: 17,
+    badge: 'real graph · linked to row 17 cross-check', badge_class: 'natural',
     file: './data/uspto_assignee_2010.csv', format: 'csv',
     forceK2_H_pair: [2, 3],
     expected_n: 3951, expected_m: 4526,
     domain: 'real USPTO patent assignee co-occurrence (2010 grants)',
     bettencourt_H: 2, bettencourt_branch: '+', bettencourt_beta_obs: 1.298, bettencourt_ci: [1.198, 1.398],
-    indicator_text: 'Real USPTO PatentsView assignee-level co-inventorship network (2010 grants, nationwide). Nodes = assignee organizations; edges = same-patent co-listed assignees. This IS the network underlying Bettencourt 22-panel row 17 — comparison to row 17 β_obs = 1.298 [1.198, 1.398] is the canonical predictive-power test.',
-    disclosure: 'Built from g_patent.tsv (244,599 2010 patents) + g_assignee_disambiguated.tsv. 6,837 multi-assignee patents → 4,526 distinct co-assignee pairs → 3,951 unique assignee organizations. REAL natural-coordination network. ★ predictor_4 acquired 2026-05-22 (author manual PatentsView S3 DL).'
-  }
-};
+    indicator_text: 'Real USPTO PatentsView assignee-level co-inventorship network (2010 grants, nationwide). Nodes = assignee organizations; edges = same-patent co-listed assignees. Linked to Bettencourt 22-panel row 17 patents indicator as a cross-check only (linked-indicator). Graph-side K detection does NOT independently verify the strict H=2 ladder assignment; the integer H_pair {2, 3} is a structural input from SI Appendix §S-PanelOrigins.',
+    disclosure: 'Built from g_patent.tsv (244,599 2010 patents) + g_assignee_disambiguated.tsv. 6,837 multi-assignee patents → 4,526 distinct co-assignee pairs → 3,951 unique assignee organizations. REAL natural-coordination network. Acquired via manual PatentsView S3 download 2026-05-22.'
+  },
+  ca_grqc: {
+    label: 'SNAP ca-GrQc (GR co-authorship)',
+    sourceKind: 'real-graph',
+    linkedPanelRowId: null,
+    badge: 'real graph · standalone (no panel β comparison)', badge_class: 'natural',
+    file: './data/ca-GrQc.txt', format: 'snap',
+    forceK2_H_pair: [2, 3],
+    expected_n: 5242, expected_m: 14496,
+    domain: 'physics co-authorship (real, standalone)',
+    indicator_text: 'Real General-Relativity arXiv co-authorship network (Stanford SNAP). Graph-side K detection demonstration only — no Bettencourt 22-panel row corresponds to this specific network, so β_obs comparison is not performed (per GPT P4polish_076 verdict: SNAP samples = standalone, no linked-indicator framing).',
+    disclosure: 'Standalone graph-side K detection (K=2 forced + Q_{K=2} >= 0.20 threshold per SI Appendix §S-Heff §2′). No panel β_obs comparison.'
+  },
+  ca_hepth: {
+    label: 'SNAP ca-HepTh (HEP-Th co-authorship)',
+    sourceKind: 'real-graph',
+    linkedPanelRowId: null,
+    badge: 'real graph · standalone (no panel β comparison)', badge_class: 'natural',
+    file: './data/ca-HepTh.txt', format: 'snap',
+    forceK2_H_pair: [2, 3],
+    expected_n: 9877, expected_m: 25998,
+    domain: 'physics co-authorship (real, standalone)',
+    indicator_text: 'Real HEP-Theory arXiv co-authorship network (Stanford SNAP). Standalone graph-side K detection demonstration; no Bettencourt 22-panel row mapping.',
+    disclosure: 'Standalone graph-side K detection (K=2 forced + Q_{K=2} >= 0.20 threshold per SI Appendix §S-Heff §2′). No panel β_obs comparison.'
+  },
+  ca_condmat: {
+    label: 'SNAP ca-CondMat (CondMat co-authorship)',
+    sourceKind: 'real-graph',
+    linkedPanelRowId: null,
+    badge: 'real graph · standalone (no panel β comparison)', badge_class: 'natural',
+    file: './data/ca-CondMat.txt', format: 'snap',
+    forceK2_H_pair: [2, 3],
+    expected_n: 23133, expected_m: 93497,
+    domain: 'physics co-authorship (real large, standalone)',
+    indicator_text: 'Real Condensed-Matter arXiv co-authorship network (Stanford SNAP, large 23K nodes, subsampled to 4000 for browser-side analysis). Standalone graph-side K detection demonstration; no Bettencourt 22-panel row mapping.',
+    disclosure: 'Standalone graph-side K detection on subsampled network (large graph). No panel β_obs comparison.'
+  }};
 
-var _currentSampleKey = 'row17';
+var _currentSampleKey = 'uspto_assignee_2010';
 
 // === parse edgelist =====================================================
+function parseCsvLine(line) {
+  // v0.26 (2026-05-25): RFC4180-style CSV parser — handles "field, with, commas"
+  // and embedded "" escapes. Fixes Chotaro Engineering, Co. / RICOH COMPANY, LTD.
+  // and 2315 similarly-named USPTO assignees that have commas inside their names.
+  var fields = [];
+  var cur = '';
+  var inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line.charAt(i);
+    if (inQ) {
+      if (c === '"') {
+        if (line.charAt(i + 1) === '"') { cur += '"'; i++; continue; }
+        inQ = false; continue;
+      }
+      cur += c;
+    } else {
+      if (c === ',') { fields.push(cur); cur = ''; continue; }
+      if (c === '"' && cur === '') { inQ = true; continue; }
+      cur += c;
+    }
+  }
+  fields.push(cur);
+  return fields;
+}
+
 function parseEdgelist(text, format) {
   var lines = text.split(/\r?\n/);
   var edges = [];
   if (format === 'csv') {
     for (var i = 1; i < lines.length; i++) {
-      var line = lines[i].trim(); if (!line) continue;
-      var parts = line.split(',');
+      var line = lines[i]; if (!line || !line.trim()) continue;
+      var parts = parseCsvLine(line);
       if (parts.length >= 2) edges.push([parts[0].trim(), parts[1].trim()]);
     }
   } else {
@@ -987,30 +997,39 @@ function renderSvgNetwork(g, partition, w, h) {
   return lines.join('');
 }
 
-// === preview table ======================================================
-function renderEdgelistPreview(edges, total) {
-  var top = edges.slice(0, 15);
-  var rows = top.map(function (e) {
-    return '<tr><td>' + escapeHtmlSafe(e[0]) + '</td><td>' + escapeHtmlSafe(e[1]) + '</td></tr>';
-  }).join('');
-  return '<div class="net-preview">' +
+// === preview textarea (ALL edges + click→selectAll + tab-aligned TSV) ===
+function renderEdgelistPreview(edges, total, sampleKey) {
+  // Show ALL edges (= up to ~200K rows、 textarea handles fine、 perf ~1-2s render for 100K+)
+  // v0.29 (2026-05-25): emit data-sample-key so CSS can per-sample-size the textarea
+  // (USPTO default 100%, others default 50%) per 著者 directive.
+  var tsvHeader = 'from\tto\n';
+  var tsvRows = edges.map(function (e) {
+    return e[0] + '\t' + e[1];
+  }).join('\n');
+  var content = tsvHeader + tsvRows;
+  var keyAttr = sampleKey ? ' data-sample-key="' + sampleKey + '"' : '';
+  return '<div class="net-preview"' + keyAttr + '>' +
     '<h4>Network preview (edgelist, read-only)</h4>' +
-    '<table class="preview-table">' +
-      '<thead><tr><th>from</th><th>to</th></tr></thead>' +
-      '<tbody>' + rows + '</tbody>' +
-    '</table>' +
-    '<p class="preview-meta">Showing top 15 of ' + total + ' edges.</p>' +
+    '<textarea class="preview-textarea" readonly rows="20" wrap="off"' + keyAttr + ' ' +
+    'onclick="this.select();" ' +
+    'title="Click to select all (paste into Excel → A/B columns auto)">' +
+    escapeHtmlSafe(content) +
+    '</textarea>' +
+    '<p class="preview-meta">Showing all ' + edges.length + ' edges (tab-separated, paste-ready). Click to select all.</p>' +
   '</div>';
 }
 
 // === sample networks grid ===============================================
 function renderSampleGrid(selectedKey) {
-  var keys = ['uspto_assignee_2010', 'ca_grqc', 'ca_hepth', 'ca_condmat'];  // v0.9.0: row17/row22 removed (= duplicates of 22-button catalogue grid)
+  // v1.6 (2026-05-27 wave2, ★Paper4_β_predictor_6): toy_balanced_2block /
+  // toy_82_split removed per 著者 directive 「Toy graphs は必要？ ダミー
+  // グラフだよね、 削除」 → flat 4-button horizontal layout, sample-group
+  // structure removed.
+  var keys = ['uspto_assignee_2010', 'ca_grqc', 'ca_hepth', 'ca_condmat'];
   return keys.map(function (key) {
     var s = SAMPLE_NETWORKS[key];
     var cls = 'sample-btn ' + s.badge_class + (key === selectedKey ? ' selected' : '');
-    var disabled = '';
-    return '<button class="' + cls + '" data-sample="' + key + '"' + disabled + ' type="button">' +
+    return '<button class="' + cls + '" data-sample="' + key + '" type="button">' +
       '<span class="s-label">' + escapeHtmlSafe(s.label) + '</span>' +
       '<span class="s-badge">' + escapeHtmlSafe(s.badge) + '</span>' +
     '</button>';
@@ -1029,217 +1048,281 @@ function renderSelectedDisplay(sampleKey) {
 }
 
 // === run results render =================================================
-function renderLiveNetworkResults(sampleKey, edges, g) {
-  var s = SAMPLE_NETWORKS[sampleKey];
-  var primaryHtml = '';
-  if (s.bettencourt_H !== undefined) {
-    var beta_pred = ladderBetaForH(s.bettencourt_H, s.bettencourt_branch === '+' ? 'plus' : 'minus');
-    var inCI = beta_pred >= s.bettencourt_ci[0] && beta_pred <= s.bettencourt_ci[1];
-    primaryHtml = '<div class="primary-result"><h4>Primary result — Path A · V261 integer-H assignment</h4>' +
-      '<p class="result-line"><strong>Selected input:</strong> ' + escapeHtmlSafe(s.label) +
-      ' (' + g.size + ' edges) — analyzed with <em>Path A · V261 integer-H assignment</em></p>' +
-      '<p class="result-formula"><strong>β<sub>pred</sub> = β<sub>+</sub>(H = ' + s.bettencourt_H + ') = 1 + 1 / [' +
-      s.bettencourt_H + ' · ln(2×' + s.bettencourt_H + ' + 1)] ≈ ' + beta_pred.toFixed(4) + '</strong></p>' +
-      '<p>β<sub>pred</sub> (predicted urban scaling exponent) = ' + beta_pred.toFixed(4) + '. ' +
-      '<em>[Path A · V261 integer-H — true 0-parameter]</em></p>' +
-      '<p><strong>Match:</strong> ' + (inCI ? '✓' : '✗') + ' β<sub>pred</sub> = ' + beta_pred.toFixed(4) + ' ' +
-      (inCI ? '∈' : '∉') + ' [' + s.bettencourt_ci[0].toFixed(3) + ', ' + s.bettencourt_ci[1].toFixed(3) +
-      '] = 95% CI of β<sub>obs</sub> (β<sub>obs</sub> = ' + s.bettencourt_beta_obs.toFixed(3) + ')</p>' +
-      '<p><strong>Concrete reading.</strong> ' + concreteReadingText(beta_pred, s.bettencourt_branch === '+' ? 'plus' : 'minus') + '</p>' +
-      '<p><strong>Indicator:</strong> ' + escapeHtmlSafe(s.indicator_text) +
-      ' <em>(structural H assignment from V261 §S-PanelOrigins, not derived from this graph)</em></p>' +
-      '<p><strong>Formula (zero fitted exponent):</strong> β<sub>±</sub>(H) = 1 ± 1 / [H · ln(2H+1)]. ' +
-      'Each integer H pins a unique β — <strong>no parameters are fit to data</strong>.</p>' +
-      '</div>';
-  } else if (s.bettencourt_H_pair !== undefined) {
-    var beta_pred = ladderBetaForH(s.bettencourt_H_eff, s.bettencourt_branch === '+' ? 'plus' : 'minus');
-    var inCI = beta_pred >= s.bettencourt_ci[0] && beta_pred <= s.bettencourt_ci[1];
-    primaryHtml = '<div class="primary-result"><h4>Primary result — Path A · V261 mixture-coordinate assignment</h4>' +
-      '<p class="result-line"><strong>Selected input:</strong> ' + escapeHtmlSafe(s.label) +
-      ' (' + g.size + ' edges) — analyzed with <em>Path A · V261 mixture H ∈ {' +
-      s.bettencourt_H_pair[0] + ', ' + s.bettencourt_H_pair[1] + '}</em></p>' +
-      '<p class="result-formula"><strong>β<sub>pred</sub> = β<sub>+</sub>(H<sub>eff</sub> = ' +
-      s.bettencourt_H_eff + ') ≈ ' + beta_pred.toFixed(4) + '</strong> (H<sub>eff</sub> = ' +
-      s.bettencourt_pi_low + ' × ' + s.bettencourt_H_pair[0] + ' + ' + s.bettencourt_pi_up + ' × ' +
-      s.bettencourt_H_pair[1] + ' = ' + s.bettencourt_H_eff + ')</p>' +
-      '<p><strong>Match:</strong> ' + (inCI ? '✓' : '✗') + ' β<sub>pred</sub> ≈ ' + beta_pred.toFixed(4) + ' ' +
-      (inCI ? '∈' : '∉') + ' [' + s.bettencourt_ci[0].toFixed(3) + ', ' + s.bettencourt_ci[1].toFixed(3) +
-      '] = 95% CI of β<sub>obs</sub> (β<sub>obs</sub> = ' + s.bettencourt_beta_obs.toFixed(3) + ')</p>' +
-      '<p><strong>Concrete reading.</strong> ' + concreteReadingText(beta_pred, 'plus') + '</p>' +
-      '<p><strong>Indicator:</strong> ' + escapeHtmlSafe(s.indicator_text) + '</p>' +
-      '<p><strong>H<sub>eff</sub> note:</strong> Tier B mixture-coordinate reading. The integer pair {' +
-      s.bettencourt_H_pair[0] + ', ' + s.bettencourt_H_pair[1] + '} is pre-specified by V261 §S-PanelOrigins; ' +
-      'the π weights are ex post barycentric weights solved backwards from β<sub>obs</sub> ' +
-      '(<em>ex post diagnostic per V264 §S-Heff §2\'</em>).</p>' +
-      '<p><strong>Formula (zero fitted exponent):</strong> β<sub>±</sub>(H) = 1 ± 1 / [H · ln(2H+1)]. ' +
-      'No parameters are fit to data.</p>' +
-      '</div>';
+var renderK2Schematic = function (sizes, kDetected, qK2, qThreshold, hPairUsed, hUseK1, w, h) {
+  // SVG: only the circles + a big red "K=N" label at the bottom center.
+  // The explanatory caption is rendered as a separate HTML block below the SVG
+  // (= via renderK2SchematicCaption), so this SVG is purely visual.
+  // 2026-05-27: shortened vertical (h 320 → 200) so K=N label sits closer to circles.
+  w = w || 480; h = h || 200;
+  var s0 = (sizes && sizes[0]) || 0;
+  var s1 = (sizes && sizes[1]) || 0;
+  var total = s0 + s1;
+  var cy = h * 0.40;
+  // K=2 branch radius scale (×2/3 per author directive — circles smaller, centers same)
+  var maxR = Math.min(w * 0.20, h * 0.34) * (2/3);
+  var minR = 30 * (2/3);
+  var svg = '<svg width="100%" viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg">';
+  svg += '<rect x="0" y="0" width="' + w + '" height="' + h + '" fill="#fafbfc" stroke="#ddd" stroke-width="1"/>';
+  if (kDetected === 1) {
+    // K=1: one consolidated grey circle
+    // diameter ×2/3 per author directive
+    var rTotal = Math.min(w * 0.24, h * 0.36) * (2/3);
+    var cxC = w / 2;
+    svg += '<circle cx="' + cxC + '" cy="' + cy + '" r="' + rTotal + '" ' +
+           'fill="#7a8a99" fill-opacity="0.78" stroke="#3a4a59" stroke-width="2"/>';
+    svg += '<text x="' + cxC + '" y="' + (cy - 4) + '" text-anchor="middle" dominant-baseline="middle" ' +
+           'fill="#fff" font-size="' + Math.min(rTotal * 0.38, 26) + '" font-weight="700">' + total + '</text>';
+    svg += '<text x="' + cxC + '" y="' + (cy + rTotal * 0.32) + '" text-anchor="middle" dominant-baseline="middle" ' +
+           'fill="#fff" font-size="' + Math.min(rTotal * 0.20, 13) + '" font-style="italic">nodes</text>';
   } else {
-    primaryHtml = '<div class="primary-result reference"><h4>Reference natural network — not part of Bettencourt 22-panel</h4>' +
-      '<p><strong>Selected input:</strong> ' + escapeHtmlSafe(s.label) + ' (' + g.order + ' nodes, ' + g.size + ' edges)</p>' +
-      '<p>' + escapeHtmlSafe(s.indicator_text) + '</p>' +
-      '<p>No β<sub>obs</sub> mapping (not a 22-panel row). Used as a graph-signature calibration baseline ' +
-      'for natural-vs-synthetic discrimination via (Q, C, d<sub>core</sub>).</p>' +
-      '</div>';
+    // K=2: two circles sized proportional to top-2 cluster sizes
+    var ratio0 = total > 0 ? s0 / total : 0.5;
+    var ratio1 = total > 0 ? s1 / total : 0.5;
+    var sq0 = Math.sqrt(ratio0);
+    var sq1 = Math.sqrt(ratio1);
+    var maxSq = Math.max(sq0, sq1);
+    var r0 = Math.max(minR, (sq0 / maxSq) * maxR);
+    var r1 = Math.max(minR, (sq1 / maxSq) * maxR);
+    var cx0 = w * 0.32;
+    var cx1 = w * 0.68;
+    for (var i = -2; i <= 2; i++) {
+      var yOff = i * 7;
+      svg += '<path d="M ' + (cx0 + r0) + ' ' + (cy + yOff) +
+             ' Q ' + (w / 2) + ' ' + (cy + yOff * 1.3) + ' ' +
+             (cx1 - r1) + ' ' + (cy + yOff) + '" ' +
+             'stroke="#bbb" stroke-width="0.7" fill="none" opacity="0.55"/>';
+    }
+    svg += '<circle cx="' + cx0 + '" cy="' + cy + '" r="' + r0 + '" ' +
+           'fill="#1f6f5c" fill-opacity="0.78" stroke="#155745" stroke-width="2"/>';
+    svg += '<text x="' + cx0 + '" y="' + (cy - 4) + '" text-anchor="middle" dominant-baseline="middle" ' +
+           'fill="#fff" font-size="' + Math.min(r0 * 0.42, 22) + '" font-weight="700">' + s0 + '</text>';
+    svg += '<text x="' + cx0 + '" y="' + (cy + Math.max(r0 * 0.35, 13)) + '" text-anchor="middle" dominant-baseline="middle" ' +
+           'fill="#fff" font-size="' + Math.min(r0 * 0.22, 11) + '" font-style="italic">nodes</text>';
+    svg += '<circle cx="' + cx1 + '" cy="' + cy + '" r="' + r1 + '" ' +
+           'fill="#2c4a6b" fill-opacity="0.78" stroke="#1a3045" stroke-width="2"/>';
+    svg += '<text x="' + cx1 + '" y="' + (cy - 4) + '" text-anchor="middle" dominant-baseline="middle" ' +
+           'fill="#fff" font-size="' + Math.min(r1 * 0.42, 22) + '" font-weight="700">' + s1 + '</text>';
+    svg += '<text x="' + cx1 + '" y="' + (cy + Math.max(r1 * 0.35, 13)) + '" text-anchor="middle" dominant-baseline="middle" ' +
+           'fill="#fff" font-size="' + Math.min(r1 * 0.22, 11) + '" font-style="italic">nodes</text>';
+    svg += '<text x="' + cx0 + '" y="' + (cy - r0 - 8) + '" text-anchor="middle" font-size="11" fill="#155745" font-weight="600">cluster A (π<tspan baseline-shift="sub">low</tspan>)</text>';
+    svg += '<text x="' + cx1 + '" y="' + (cy - r1 - 8) + '" text-anchor="middle" font-size="11" fill="#1a3045" font-weight="600">cluster B (π<tspan baseline-shift="sub">up</tspan>)</text>';
   }
-  // Louvain diagnostic — FLAT, no <details> wrap
-  var part = louvainPartition(g, 1.0);
-  var sizes = countClusterSizes(part);
-  var K = sizes.length;
-  var pi_top2 = K >= 2 ? sizes[0] / (sizes[0] + sizes[1]) : 1.0;
-  var pi_whole = sizes[0] / g.order;
-  var Q = computeModularity(g, part, 1.0);
-  var C = clusteringCoefficient(g);
-  var kcore = coreNumberMax(g);
-  // sweep only for smaller graphs
-  var sweep = [];
-  if (g.order <= 6000) {
-    [0.1, 0.3, 0.5, 0.7, 1.0].forEach(function (res) {
-      var p = louvainPartition(g, res);
-      var ss = countClusterSizes(p);
-      sweep.push({ res: res, K: ss.length, top3: ss.slice(0, 3),
-                   pi_top2: ss.length >= 2 ? ss[0] / (ss[0] + ss[1]) : 1.0 });
-    });
+  // Centered "K=N" big red label at bottom (closer to circles after height shorten)
+  var labelY = h - 18;
+  var label = 'K=' + kDetected;
+  svg += '<text x="' + (w / 2) + '" y="' + labelY + '" text-anchor="middle" font-size="34" font-weight="800" fill="#c0392b" letter-spacing="0.04em">' + label + '</text>';
+  svg += '</svg>';
+  return svg;
+};
+
+// HTML caption block rendered below the SVG (= clear explanation, separate from the figure).
+var renderK2SchematicCaption = function (sizes, kDetected, qK2, qThreshold, hPairUsed, hUseK1, branchSign, nNodes, mEdges) {
+  var s0 = (sizes && sizes[0]) || 0;
+  var s1 = (sizes && sizes[1]) || 0;
+  var total = s0 + s1;
+  var passOrFail = (qK2 >= qThreshold) ? 'passes' : 'fails';
+  var checkSym = (qK2 >= qThreshold) ? '✓' : '✗';
+  var thr = qThreshold.toFixed(2);
+  var qStr = qK2.toFixed(3);
+  // π values from cluster size ratios
+  var piLow = total > 0 ? s0 / total : 0;
+  var piUp  = total > 0 ? s1 / total : 0;
+  // Step 0 primer: edge ≠ node, with actual counts + average degree (= 2m/n for undirected simple graph)
+  var step0Html = '';
+  if (nNodes !== undefined && mEdges !== undefined && nNodes > 0) {
+    var avgDeg = (2 * mEdges / nNodes);
+    step0Html = '<p class="k2-schem-line"><span class="k2-step">0.</span> <strong>Edges are not nodes.</strong> ' +
+                'This network has <strong>' + nNodes + ' nodes</strong> and <strong>' + mEdges + ' edges</strong> ' +
+                '(= each node is connected on average to ' + avgDeg.toFixed(1) + ' edges; ' +
+                'avg degree = 2m/n for an undirected simple graph). ' +
+                '<em>The circles below count <strong>nodes</strong>, not edges — they show how the ' + nNodes + ' nodes split across clusters.</em></p>';
   }
-  var svg = renderSvgNetwork(g, part, 480, 320);
-  // === v0.11.0: K=2 FORCED cluster analysis (integer-pair assumption) ===
-  // Force K=2 partition + π from cluster sizes + H_eff under assumed H_pair → β_pred
+  var c = '<div class="k2-schem-caption">';
+  if (kDetected === 1) {
+    c += '<p class="k2-schem-line1"><strong>【K=1 (structural support only)】</strong></p>';
+    c += step0Html;
+    c += '<p class="k2-schem-line"><span class="k2-step">1.</span> We hypothesised K=2 and forced a 2-cluster partition. ' +
+         'Modularity at that K=2 partition is <strong>Q<sub>K=2</sub> = ' + qStr + '</strong> ' +
+         '<em>(Q<sub>K=2</sub> measures how cleanly the graph splits into 2 clusters by edge density; ~0 = no structure, ~1 = perfectly modular).</em></p>';
+    c += '<p class="k2-schem-line"><span class="k2-step">2.</span> Threshold is <strong>≥ ' + thr + '</strong> (pre-registered in SI Appendix §S-Heff §2&prime;). ' +
+         '<strong>' + qStr + ' ' + checkSym + ' ' + passOrFail + '</strong> the threshold, so the K=2 hypothesis is rejected.</p>';
+    c += '<p class="k2-schem-line"><span class="k2-step">3.</span> We <strong>redraw as 1 circle</strong> (= K=1 single ladder support). Apply ladder formula at single integer H = ' + (hUseK1 !== undefined ? hUseK1 : 'H<sub>use</sub>') + ' to obtain β<sub>df</sub>.</p>';
+  } else {
+    var H_low = (hPairUsed && hPairUsed.length >= 2) ? hPairUsed[0] : 2;
+    var H_up  = (hPairUsed && hPairUsed.length >= 2) ? hPairUsed[1] : 3;
+    var H_eff = piLow * H_low + piUp * H_up;
+    // β_df = 1 ± 1 / [H_eff × ln(2 × H_eff + 1)]
+    var epsH = 1.0 / (H_eff * Math.log(2 * H_eff + 1));
+    var sgnNum = (branchSign === 'minus' || branchSign === '-') ? -1 : 1;
+    var beta_df = 1 + sgnNum * epsH;
+    var sgnTxt = (sgnNum === 1) ? '+' : '−';
+    c += '<p class="k2-schem-line1"><strong>【K=2 (active support, structurally validated)】</strong></p>';
+    c += step0Html;
+    c += '<p class="k2-schem-line"><span class="k2-step">1.</span> Count the circles: <strong>2 circles</strong> drawn from the K=2 forced partition. ' +
+         'Cluster sizes [' + s0 + ', ' + s1 + '] give the mixing weights <strong>π<sub>low</sub> = ' + s0 + '/' + total + ' = ' + piLow.toFixed(3) + '</strong>, <strong>π<sub>up</sub> = ' + s1 + '/' + total + ' = ' + piUp.toFixed(3) + '</strong> ' +
+         '<em>(circle area ratio directly maps to π ratio).</em></p>';
+    c += '<p class="k2-schem-line"><span class="k2-step">2.</span> Modularity at this K=2 partition is <strong>Q<sub>K=2</sub> = ' + qStr + '</strong> ' +
+         '<em>(Q<sub>K=2</sub> measures how cleanly the graph splits into 2 clusters by edge density; ~0 = no structure, ~1 = perfectly modular).</em></p>';
+    c += '<p class="k2-schem-line"><span class="k2-step">3.</span> Threshold is <strong>≥ ' + thr + '</strong> (pre-registered in SI Appendix §S-Heff §2&prime;). ' +
+         '<strong>' + qStr + ' ' + checkSym + ' ' + passOrFail + '</strong> the threshold, so K=2 is structurally supported.</p>';
+    c += '<p class="k2-schem-line"><span class="k2-step">4.</span> Mix on H<sub>pair</sub> = {' + H_low + ', ' + H_up + '} to get the effective ladder coordinate: <br>' +
+         '<span class="k2-formula">H<sub>eff</sub> = π<sub>low</sub> × ' + H_low + ' + π<sub>up</sub> × ' + H_up + ' = ' + piLow.toFixed(3) + ' × ' + H_low + ' + ' + piUp.toFixed(3) + ' × ' + H_up + ' = <strong>' + H_eff.toFixed(3) + '</strong></span></p>';
+    c += '<p class="k2-schem-line"><span class="k2-step">5.</span> Apply the ladder formula at H<sub>eff</sub>: <br>' +
+         '<span class="k2-formula">β<sub>df</sub> = 1 ' + sgnTxt + ' 1 / [H<sub>eff</sub> × ln(2·H<sub>eff</sub> + 1)] = 1 ' + sgnTxt + ' 1 / [' + H_eff.toFixed(3) + ' × ln(' + (2 * H_eff + 1).toFixed(3) + ')] = <strong>' + beta_df.toFixed(4) + '</strong></span></p>';
+  }
+  c += '</div>';
+  return c;
+};
+
+function renderLiveNetworkResults(sampleKey, edges, g) {
+  // v1.5 (2026-05-27, ★Paper4_β_predictor_6): sourceKind hard-gate apply per
+  // GPT P4polish_076 verdict.
+  //   real-graph + linkedPanelRowId !== null (= USPTO 2010 → linked to row 17):
+  //     4 verdict layer split (Topology K=1/K=2 / β compatibility with linked
+  //     panel row CI / Strict-H corroboration / wording note avoiding
+  //     "verifies strict H=2").
+  //   real-graph + linkedPanelRowId === null (= SNAP samples): standalone
+  //     graph-side K detection only, no panel β comparison.
+  //   toy-graph: Path B demo only, no panel β comparison, explicit "not
+  //     panel evidence" framing.
+  //   (panel-tier-a / panel-tier-b are in indicators[] and handled by
+  //    renderDetailPanel; renderLiveNetworkResults is never called for them.)
+  var s = SAMPLE_NETWORKS[sampleKey];
+  var sourceKind = s.sourceKind || 'unknown';
+
+  // Shared graph metrics (used by all branches)
   var partK2 = forceK2Partition(g);
   var sizesK2 = countClusterSizes(partK2);
   var sK2_0 = sizesK2[0] || g.order;
   var sK2_1 = sizesK2[1] || 0;
   var totK2 = sK2_0 + sK2_1;
   var piLow_K2 = totK2 > 0 ? sK2_0 / totK2 : 1.0;
-  var piUp_K2 = totK2 > 0 ? sK2_1 / totK2 : 0.0;
-
-  // Determine H_pair to use
-  var H_pair_used = s.forceK2_H_pair ||
-                    (s.bettencourt_H_pair ? s.bettencourt_H_pair :
-                     (s.bettencourt_H !== undefined ? [s.bettencourt_H, s.bettencourt_H + 1] : [1, 2]));
+  var piUp_K2  = totK2 > 0 ? sK2_1 / totK2 : 0.0;
+  var H_pair_used = s.forceK2_H_pair || [2, 3];
   var H_eff_K2 = piLow_K2 * H_pair_used[0] + piUp_K2 * H_pair_used[1];
   var branchSign = (s.bettencourt_branch === '-') ? 'minus' : 'plus';
   var beta_pred_K2 = ladderBetaForH(H_eff_K2, branchSign);
-
-  // === v0.15.0: graph-shape-based K detection (no β_obs in decision) ===
-  // 著者 directive 2026-05-22: 「ネットワーク分離を見て『あるものはK=1っぽい、K=2っぽいもの』を指定する」
-  // Decision rule (graph signature only):
-  //   K = 2-like if Q(K=2 forced) >= 0.20 AND top-2 concentration >= 60%
-  //   else K = 1-like
-  // β_obs is used ONLY for empirical MATCH verdict, NEVER for path selection.
   var Q_K2 = computeModularity(g, partK2, 1.0);
-  // v0.17.0 bug fix: top2_concentration from DEFAULT Louvain partition sizes
-  // (= meaningful natural cluster concentration), NOT from forced K=2 (= always 100%).
-  var top2_concentration = sizes.length >= 2 ? (sizes[0] + sizes[1]) / g.order : 1.0;
-  // v0.18.0: K detection simplified to Q_K2 (= modularity at K=2 forced) only.
-  // Rationale: top2_concentration from default Louvain is typically small for sparse networks
-  // (many small communities), so it's not a discriminator. Q_K2 captures whether the K=2
-  // partition explains the graph's modular structure regardless of how default Louvain split.
   var Q_THRESHOLD = 0.20;
   var K_detected = (Q_K2 >= Q_THRESHOLD) ? 2 : 1;
-  var K_decision_basis = '(Q<sub>K=2</sub> = ' + Q_K2.toFixed(3) +
-                         (Q_K2 >= Q_THRESHOLD ? ' ≥ ' : ' < ') + Q_THRESHOLD.toFixed(2) +
-                         '; top-2 default concentration = ' + (top2_concentration * 100).toFixed(1) + '% [informational])';
-
-  // Determine H input from V261 for the detected K
-  var H_use_K1;
-  if (s.bettencourt_H !== undefined) {
-    H_use_K1 = s.bettencourt_H;
-  } else if (s.bettencourt_H_pair !== undefined) {
-    // Choose H_low (= the "shallower" rung) as default K=1 candidate
-    H_use_K1 = s.bettencourt_H_pair[0];
-  } else {
-    H_use_K1 = H_pair_used[0];
-  }
+  var H_use_K1 = (s.bettencourt_H !== undefined) ? s.bettencourt_H : H_pair_used[0];
   var beta_K1_use = ladderBetaForH(H_use_K1, branchSign);
+  var beta_df = (K_detected === 2) ? beta_pred_K2 : beta_K1_use;
+  var H_label_final = (K_detected === 2)
+    ? ('H<sub>eff</sub> = ' + H_eff_K2.toFixed(3) + ' (= ' +
+       piLow_K2.toFixed(3) + '·' + H_pair_used[0] + ' + ' +
+       piUp_K2.toFixed(3) + '·' + H_pair_used[1] + ')')
+    : ('H = ' + H_use_K1);
+  var C = clusteringCoefficient(g);
+  var kcore = coreNumberMax(g);
+  var svg = renderK2Schematic(sizesK2, K_detected, Q_K2, Q_THRESHOLD, H_pair_used, H_use_K1, 480, 200);
+  var schemCaption = renderK2SchematicCaption(sizesK2, K_detected, Q_K2, Q_THRESHOLD, H_pair_used, H_use_K1, branchSign, g.order, g.size);
 
-  // The final β_pred per graph-shape decision
-  var beta_pred_final, H_label_final, path_label;
-  if (K_detected === 2) {
-    beta_pred_final = beta_pred_K2;
-    H_label_final = 'H<sub>eff</sub> = ' + H_eff_K2.toFixed(3) + ' (= ' + piLow_K2.toFixed(3) + '·' + H_pair_used[0] + ' + ' + piUp_K2.toFixed(3) + '·' + H_pair_used[1] + ')';
-    path_label = '★★ K=2-like detected → K=2 mixture path (V261 H<sub>pair</sub> + graph-derived π)';
-  } else {
-    beta_pred_final = beta_K1_use;
-    H_label_final = 'H = ' + H_use_K1;
-    path_label = '★★★ K=1-like detected → K=1 single-integer path (V261 H, no graph π needed)';
-  }
-
-  function matchCheck(beta, ci) {
-    return ci && beta >= ci[0] && beta <= ci[1];
-  }
-
+  var primaryHtml = '';
   var verdictHtml = '';
-  if (s.bettencourt_ci) {
-    var matched = matchCheck(beta_pred_final, s.bettencourt_ci);
-    var sym = matched ? '✓' : '✗';
-    var cls = matched ? 'match' : 'mismatch';
-    var kBadgeCls = (K_detected === 2) ? 'k2-badge' : 'k1-badge';
-    var kBadgeText = (K_detected === 2) ? '★★ K=2-like (graph)' : '★★★ K=1-like (graph)';
 
+  if (sourceKind === 'real-graph' && s.linkedPanelRowId === 17) {
+    // === USPTO 2010 — linked-indicator cross-check vs row 17 ===
+    var topologyVerdict = (K_detected === 2)
+      ? 'K=2 active support (graph-shape, Q<sub>K=2</sub> = ' + Q_K2.toFixed(3) + ' ≥ 0.20)'
+      : 'K=1 space (graph-shape, Q<sub>K=2</sub> = ' + Q_K2.toFixed(3) + ' < 0.20)';
+    var ci = s.bettencourt_ci;
+    var betaCompat = (ci && beta_df >= ci[0] && beta_df <= ci[1])
+      ? '✓ β<sub>df</sub> = ' + beta_df.toFixed(4) + ' ∈ row 17 CI [' + ci[0].toFixed(3) + ', ' + ci[1].toFixed(3) + ']'
+      : '✗ β<sub>df</sub> = ' + beta_df.toFixed(4) + ' ∉ row 17 CI [' + ci[0].toFixed(3) + ', ' + ci[1].toFixed(3) + ']';
+    var strictHVerdict;
+    if (K_detected === 1) {
+      strictHVerdict = '✓ Graph topology corroborates the Tier A single-ladder H=' + H_use_K1 +
+                       ' assignment (K=1 single-rung structural support).';
+    } else {
+      strictHVerdict = '⚠ <strong>NOT</strong> a strict-H verification. Graph-side K=2 detection yields a mixed-support result (H<sub>eff</sub> = ' +
+                       H_eff_K2.toFixed(3) + ' ≠ ' + H_use_K1 + '). β<sub>df</sub> may be β-level compatible with the row 17 CI, but this is NOT an independent verification of the strict H=' + H_use_K1 + ' integer ladder.';
+    }
+    primaryHtml =
+      '<div class="primary-result real-linked"><h4>Primary result — Real-graph cross-check (linked to panel row 17)</h4>' +
+      '<p class="result-line"><strong>Selected input:</strong> ' + escapeHtmlSafe(s.label) +
+      ' (' + g.order + ' nodes, ' + g.size + ' edges)</p>' +
+      '<p><strong>Indicator:</strong> ' + escapeHtmlSafe(s.indicator_text) + '</p>' +
+      '<p class="diff-row17-note"><strong>Difference from panel row 17 (β<sub>obs</sub> source):</strong> Shared USPTO root corpus, two different projections. Row 17 (β<sub>obs</sub> = 1.298) = Bettencourt 2007 city-level scaling (patent counts vs MSA population). This panel (graph-side) = USPTO 2010 assignee co-applicant graph topology → K detection. The K detection procedure does not consult β<sub>obs</sub> (procedural Stage A non-circularity).</p>' +
+      '</div>';
     verdictHtml =
-      '<div class="diag-verdict ' + cls + ' k-tier-' + K_detected + '">' +
-        '<span class="k-badge ' + kBadgeCls + '">' + kBadgeText + '</span> ' +
-        '<strong>' + sym + ' Match:</strong> ' +
-        'β<sub>pred</sub> at ' + H_label_final + ' = <strong>' + beta_pred_final.toFixed(4) + '</strong> ' +
-        (matched ? '∈' : '∉') + ' [' + s.bettencourt_ci[0].toFixed(3) + ', ' + s.bettencourt_ci[1].toFixed(3) +
-        '] = 95% CI of β<sub>obs</sub> (β<sub>obs</sub> = ' + s.bettencourt_beta_obs.toFixed(3) + ')' +
-      '</div>' +
-      '<p class="diag-path"><strong>Graph-shape decision:</strong> ' + path_label + '</p>' +
-      '<p class="diag-path"><strong>Decision basis (graph metrics only, no β<sub>obs</sub>):</strong> ' + K_decision_basis + '. ' +
-      'Rule: K=2-like if Q<sub>K=2</sub> ≥ 0.20 (= forced K=2 partition explains modular structure); else K=1-like.</p>' +
-      '<p class="diag-aux"><em>Both candidate predictions for reference:</em> ' +
-      'K=1 with H = ' + H_use_K1 + ' → β = ' + beta_K1_use.toFixed(4) + ' ' +
-      (matchCheck(beta_K1_use, s.bettencourt_ci) ? '<span class="m-yes">✓ MATCH</span>' : '<span class="m-no">✗ MISMATCH</span>') + ' &nbsp;·&nbsp; ' +
-      'K=2 with H<sub>pair</sub> = {' + H_pair_used[0] + ', ' + H_pair_used[1] + '}, ' +
-      'π<sub>low</sub> = ' + piLow_K2.toFixed(3) + ', π<sub>up</sub> = ' + piUp_K2.toFixed(3) +
-      ' → β = ' + beta_pred_K2.toFixed(4) + ' ' +
-      (matchCheck(beta_pred_K2, s.bettencourt_ci) ? '<span class="m-yes">✓ MATCH</span>' : '<span class="m-no">✗ MISMATCH</span>') + '</p>' +
-      '<p class="diag-aux"><em>Note: β<sub>obs</sub> is used <strong>only</strong> for the empirical MATCH verdict, not for path selection. The K=1 vs K=2 path is decided by graph shape alone (Q + top-2 concentration). H<sub>max</sub> input from V261 §S-PanelOrigins.</em></p>';
+      '<div class="verdict-layer-split">' +
+        '<h5 class="verdict-layer-title">4 verdict layer split (honest framing per GPT P4polish_076)</h5>' +
+        '<table class="verdict-layer-table">' +
+          '<tr><td class="vl-key">Topology verdict</td><td class="vl-val">' + topologyVerdict + '</td></tr>' +
+          '<tr><td class="vl-key">β-level CI compatibility (vs row 17)</td><td class="vl-val">' + betaCompat + '</td></tr>' +
+          '<tr><td class="vl-key">Strict-H corroboration</td><td class="vl-val">' + strictHVerdict + '</td></tr>' +
+          '<tr><td class="vl-key">Wording note</td><td class="vl-val"><em>This panel does <strong>NOT</strong> claim "independently verifies strict H=' + H_use_K1 + '". β<sub>df</sub> compatibility ≠ strict-H topology verification. H<sub>pair</sub> = {' + H_pair_used[0] + ', ' + H_pair_used[1] + '} is a structural input from SI Appendix §S-PanelOrigins, not derived from the graph.</em></td></tr>' +
+        '</table>' +
+      '</div>';
+
+  } else if (sourceKind === 'real-graph') {
+    // === SNAP — standalone graph-side K detection (no panel β comparison) ===
+    primaryHtml =
+      '<div class="primary-result real-standalone"><h4>Primary result — Standalone graph-side K detection (no panel β comparison)</h4>' +
+      '<p class="result-line"><strong>Selected input:</strong> ' + escapeHtmlSafe(s.label) +
+      ' (' + g.order + ' nodes, ' + g.size + ' edges)</p>' +
+      '<p><strong>Indicator:</strong> ' + escapeHtmlSafe(s.indicator_text) + '</p>' +
+      '<p class="standalone-note"><em>This network does NOT map to any Bettencourt 22-panel row. Graph topology measurement only; no β<sub>obs</sub> comparison is performed (per GPT P4polish_076 verdict: SNAP samples = standalone, no linked-indicator cross-check).</em></p>' +
+      '</div>';
+    verdictHtml =
+      '<div class="verdict-layer-split standalone">' +
+        '<h5 class="verdict-layer-title">Graph topology measurement</h5>' +
+        '<table class="verdict-layer-table">' +
+          '<tr><td class="vl-key">Topology verdict</td><td class="vl-val">' +
+            ((K_detected === 2)
+              ? 'K=2 active support (Q<sub>K=2</sub> = ' + Q_K2.toFixed(3) + ' ≥ 0.20)'
+              : 'K=1 space (Q<sub>K=2</sub> = ' + Q_K2.toFixed(3) + ' < 0.20)') +
+            '</td></tr>' +
+          '<tr><td class="vl-key">Diagnostic β<sub>df</sub> reference</td><td class="vl-val">β<sub>df</sub> at ' + H_label_final + ' = ' + beta_df.toFixed(4) + ' <em>(reference value computed under the default H<sub>pair</sub> = {' + H_pair_used[0] + ', ' + H_pair_used[1] + '} shallow-coordination assumption; not compared to any panel β<sub>obs</sub>)</em></td></tr>' +
+        '</table>' +
+      '</div>';
+
+  } else if (sourceKind === 'toy-graph') {
+    // === Toy graph — Path B demo, no panel evidence ===
+    primaryHtml =
+      '<div class="primary-result toy-graph"><h4>Primary result — Toy-graph K-detection demo (illustration only)</h4>' +
+      '<p class="result-line"><strong>Selected input:</strong> ' + escapeHtmlSafe(s.label) +
+      ' (' + g.order + ' nodes, ' + g.size + ' edges)</p>' +
+      '<p><strong>Indicator:</strong> ' + escapeHtmlSafe(s.indicator_text) + '</p>' +
+      '<p class="toy-graph-note"><strong>⚠ Pedagogical demo only.</strong> This is a synthetic toy graph constructed for K-detection illustration purposes. It is <strong>NOT</strong> panel evidence; the K verdict here reflects the generator construction, not any Bettencourt 22-panel row. No β<sub>obs</sub> comparison is performed (per GPT P4polish_076 verdict: synthetic graphs are not paper-side evidence).</p>' +
+      '</div>';
+    verdictHtml =
+      '<div class="verdict-layer-split toy">' +
+        '<h5 class="verdict-layer-title">Toy-graph K-detection (illustration only)</h5>' +
+        '<table class="verdict-layer-table">' +
+          '<tr><td class="vl-key">Topology verdict</td><td class="vl-val">' +
+            ((K_detected === 2)
+              ? 'K=2 forced partition, Q<sub>K=2</sub> = ' + Q_K2.toFixed(3) + ' ≥ 0.20 (mechanically passes by generator construction)'
+              : 'K=1 (Q<sub>K=2</sub> = ' + Q_K2.toFixed(3) + ' < 0.20)') +
+            '</td></tr>' +
+          '<tr><td class="vl-key">Diagnostic β<sub>df</sub> (illustration only)</td><td class="vl-val">β<sub>df</sub> at ' + H_label_final + ' = ' + beta_df.toFixed(4) + ' <em>(NOT compared to any panel β<sub>obs</sub>; this is a generator artifact, not paper-side evidence)</em></td></tr>' +
+        '</table>' +
+      '</div>';
+
   } else {
-    // SNAP reference: no β_obs, just show graph-detected K and resulting β_pred
-    verdictHtml =
-      '<div class="diag-verdict reference">' +
-        '<span class="k-badge ' + ((K_detected === 2) ? 'k2-badge' : 'k1-badge') + '">' +
-          ((K_detected === 2) ? '★★ K=2-like (graph)' : '★★★ K=1-like (graph)') +
-        '</span> ' +
-        '<strong>Graph-shape detection:</strong> ' + K_decision_basis + '. ' +
-        '<br>β<sub>pred</sub> at ' + H_label_final + ' = ' + beta_pred_final.toFixed(4) +
-        ' (no panel β<sub>obs</sub> to compare against; H<sub>pair</sub> = {' + H_pair_used[0] + ', ' + H_pair_used[1] + '} default shallow-coordination assumption).' +
-      '</div>' +
-      '<p class="diag-path"><em>SNAP reference natural network — graph-shape K detection alone, no panel β<sub>obs</sub> mapping.</em></p>' +
-      '<p class="diag-aux"><em>Default Louvain raw K = ' + K + '. Q<sub>K=2</sub> = ' + Q_K2.toFixed(3) +
-      ', top-2 concentration = ' + (top2_concentration * 100).toFixed(1) + '%.</em></p>';
+    primaryHtml =
+      '<div class="primary-result"><h4>Live Network result</h4>' +
+      '<p>Unsupported sourceKind: ' + escapeHtmlSafe(sourceKind) + '</p>' +
+      '</div>';
   }
 
-
+  // === Shared diagnostic block (schematic + verdict + metrics) ===
   var diagFlat = '<div class="diagnostic-flat">' +
-    '<h4>Secondary: Cluster analysis diagnostic (reproducibility instrument — not the primary prediction)</h4>' +
-    '<p class="diag-note"><em>Path B · graph cluster detection (Louvain modularity) + V261 panel H_max input. ' +
-    'Per ★ predictor_4 wave 1+2 finding: default Louvain typically gives K >> 2 on real networks, so the auto-path ' +
-    '(K=1 → integer / K=2 → mixture) does not directly apply. The manual H_max fallback from the V261 panel ' +
-    'restores the 0-parameter ladder prediction; this is explicitly the V264 §S-Heff §2&prime; ex post diagnostic framing.</em></p>' +
+    '<h4>K-detection diagnostic (graph-side, K=2 forced partition + Q<sub>K=2</sub> ≥ 0.20 threshold per SI Appendix §S-Heff §2′)</h4>' +
     verdictHtml +
     '<div class="net-graph">' + svg + '</div>' +
+    schemCaption +
     '<div class="net-metrics">' +
       '<span class="m-box"><span class="m-l">n</span><span class="m-v">' + g.order + '</span></span>' +
       '<span class="m-box"><span class="m-l">m</span><span class="m-v">' + g.size + '</span></span>' +
-      '<span class="m-box"><span class="m-l">K (Louvain default)</span><span class="m-v">' + K + '</span></span>' +
-      '<span class="m-box"><span class="m-l">top-2 sizes</span><span class="m-v">[' + sizes.slice(0, 2).join(', ') + ']</span></span>' +
-      '<span class="m-box"><span class="m-l">π<sub>lo</sub> (top-2 norm)</span><span class="m-v">' + pi_top2.toFixed(3) + '</span></span>' +
-      '<span class="m-box"><span class="m-l">π<sub>lo</sub> (whole)</span><span class="m-v">' + pi_whole.toFixed(3) + '</span></span>' +
-      '<span class="m-box"><span class="m-l">Q modularity</span><span class="m-v">' + Q.toFixed(3) + '</span></span>' +
+      '<span class="m-box"><span class="m-l">top-2 sizes (K=2 forced)</span><span class="m-v">[' + sizesK2.slice(0, 2).join(', ') + ']</span></span>' +
+      '<span class="m-box"><span class="m-l">π<sub>lo</sub></span><span class="m-v">' + piLow_K2.toFixed(3) + '</span></span>' +
+      '<span class="m-box"><span class="m-l">Q<sub>K=2</sub></span><span class="m-v">' + Q_K2.toFixed(3) + '</span></span>' +
       '<span class="m-box"><span class="m-l">C clustering</span><span class="m-v">' + C.toFixed(3) + '</span></span>' +
       '<span class="m-box"><span class="m-l">d<sub>core</sub> max</span><span class="m-v">' + kcore + '</span></span>' +
-    '</div>';
-  if (sweep.length > 0) {
-    diagFlat += '<h5>Louvain resolution sweep (K=2 emergence search)</h5>' +
-      '<table class="sweep-table"><thead><tr><th>res</th><th>K</th><th>top 3 sizes</th><th>π<sub>top-2</sub></th></tr></thead><tbody>' +
-      sweep.map(function (r) {
-        return '<tr><td>' + r.res.toFixed(2) + '</td><td>' + r.K + (r.K === 2 ? ' ★' : '') +
-               '</td><td>[' + r.top3.join(', ') + ']</td><td>' + r.pi_top2.toFixed(3) + '</td></tr>';
-      }).join('') + '</tbody></table>';
-  }
-  diagFlat += '<p class="diag-disclosure"><em>' + escapeHtmlSafe(s.disclosure) + '</em></p></div>';
+    '</div>' +
+    '<p class="diag-disclosure"><em>' + escapeHtmlSafe(s.disclosure) + '</em></p></div>';
 
   return primaryHtml + diagFlat;
 }
@@ -1259,7 +1342,7 @@ function loadPreview(sampleKey) {
     return r.text();
   }).then(function (text) {
     var edges = parseEdgelist(text, s.format);
-    target.innerHTML = renderEdgelistPreview(edges, edges.length);
+    target.innerHTML = renderEdgelistPreview(edges, edges.length, sampleKey);
   }).catch(function (e) {
     target.innerHTML = '<div class="warning-box">Preview load error: ' + escapeHtmlSafe(e.message || String(e)) + '</div>';
   });
@@ -1273,7 +1356,7 @@ function loadAndAnalyze(sampleKey) {
     target.innerHTML = '<div class="warning-box">USPTO assignee-level co-inventorship bulk download pending (~1.3 GB, multi-session). Not available in this version.</div>';
     return;
   }
-  target.innerHTML = '<div class="loading-spin">Fetching ' + escapeHtmlSafe(s.file) + ' and running Louvain analysis…</div>';
+  target.innerHTML = '<div class="loading-spin">Fetching ' + escapeHtmlSafe(s.file) + ' and running graph-shape cluster analysis…</div>';
   fetch(s.file).then(function (r) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     return r.text();
@@ -1299,29 +1382,51 @@ function loadAndAnalyze(sampleKey) {
 function switchSample(sampleKey) {
   // v0.12.0: uspto_assignee_2010 now real-data enabled
   // v0.20.1: ensure Live Network section visible whenever a sample is switched
+  // v0.21: removed unconditional scrollIntoView (= callers handle scroll: catalogue click → btn top, sample btn → live section)
   var _liveSec_show = document.getElementById('live-network-section');
   if (_liveSec_show) _liveSec_show.classList.remove('hidden');
-  // Also scroll Live section into view so user sees the change
-  if (_liveSec_show) setTimeout(function () { _liveSec_show.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
   _currentSampleKey = sampleKey;
   // v0.10.0: SNAP/USPTO is NOT a Bettencourt 22-panel row.
   // Clear the catalogue detail panel so "Selected row N — ..." doesn't mislead.
   // For row17/row22, the catalogue detail panel keeps its content (it WAS triggered
   // by the catalogue button click, which already populated detail-panel).
-  if (sampleKey !== 'row17' && sampleKey !== 'row22') {
-    var det = document.getElementById('detail-panel');
-    if (det) {
-      det.innerHTML = '<p class="detail-cleared">' +
-        '<em>No 22-panel row selected.</em> ' +
-        'You are viewing a reference natural network in the Live Network Analysis section below.' +
-        ' Click any of the 22 indicator buttons above to inspect the Bettencourt panel row.</p>';
-      det.classList.remove('active');
+  // v1.5 (2026-05-27, ★Paper4_β_predictor_6): sourceKind-aware sample-mode
+  // message. Any sample click (real-graph or toy-graph) clears the catalogue
+  // detail panel and writes a sourceKind-specific message; row17/row22
+  // special-case removed (those keys no longer exist — renamed to
+  // toy_balanced_2block / toy_82_split).
+  var s_for_msg = SAMPLE_NETWORKS[sampleKey];
+  var det = document.getElementById('detail-panel');
+  if (det && s_for_msg) {
+    det.dataset.sampleMode = 'true';
+    var msgHtml;
+    if (s_for_msg.sourceKind === 'real-graph' && s_for_msg.linkedPanelRowId === 17) {
+      msgHtml = '<p class="sample-mode-msg">' +
+        '<strong>Real network selected (linked to panel row 17 cross-check).</strong> ' +
+        'Graph topology is measured via K=2 forced partition + Q<sub>K=2</sub> ≥ 0.20 threshold. ' +
+        '<em>β<sub>df</sub></em> is computed under the SI Appendix §S-PanelOrigins H<sub>pair</sub> input and reported in the 4-layer verdict ' +
+        '(Topology / β-level CI compat vs row 17 / Strict-H corroboration / wording note) ' +
+        'in the Live Network Analysis section below &darr;.' +
+        '</p>';
+    } else if (s_for_msg.sourceKind === 'real-graph') {
+      msgHtml = '<p class="sample-mode-msg">' +
+        '<strong>Real network selected (standalone).</strong> ' +
+        'No mapping to any Bettencourt 22-panel row. Graph topology K detection is reported in the Live Network Analysis section below &darr;; no panel β<sub>obs</sub> comparison is performed.' +
+        '</p>';
+    } else if (s_for_msg.sourceKind === 'toy-graph') {
+      msgHtml = '<p class="sample-mode-msg">' +
+        '<strong>Toy graph selected (illustration only).</strong> ' +
+        'This synthetic network is for K-detection demonstration purposes only; it is <strong>NOT</strong> panel evidence. The K verdict shown in the Live Network Analysis section below &darr; reflects the generator construction, not any Bettencourt 22-panel row.' +
+        '</p>';
+    } else {
+      msgHtml = '<p class="sample-mode-msg"><strong>Sample selected.</strong></p>';
     }
-    // also clear the .selected highlight on catalogue buttons
-    document.querySelectorAll('button.cat-btn.selected').forEach(function (b) {
-      b.classList.remove('selected');
-    });
+    det.innerHTML = msgHtml;
+    det.classList.add('active');
   }
+  document.querySelectorAll('button.cat-btn.selected').forEach(function (b) {
+    b.classList.remove('selected');
+  });
   document.querySelectorAll('.sample-btn').forEach(function (b) {
     b.classList.remove('selected');
     if (b.dataset.sample === sampleKey) b.classList.add('selected');
@@ -1343,9 +1448,18 @@ function initLiveNetworkSection() {
     var b = ev.target.closest('.sample-btn');
     if (!b || b.disabled) return;
     switchSample(b.dataset.sample);
-    // scroll the section into view
-    var section = document.getElementById('live-network-section');
-    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // v1.4 (2026-05-27 著者 split directive, supersedes v0.22 unified-button-top):
+    //   rows 1-4 (= top of grid, scrolling to button top leaves awkward whitespace) → scroll to
+    //   #catalogue-section-anchor (above result-notice)
+    //   rows 5-22 → scroll to button top (= v0.22 original behavior preserved)
+    var rid_v14 = Number(b.getAttribute('data-row-id'));
+    if (rid_v14 >= 1 && rid_v14 <= 4) {
+      var anchorAbv2 = document.getElementById('catalogue-section-anchor');
+      if (anchorAbv2) anchorAbv2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      else b.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      b.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
   var ab = document.getElementById('analyze-btn');
   if (ab) {
@@ -1372,101 +1486,474 @@ if (document.readyState === 'loading') {
 (function () {
   if (typeof renderDetailPanel !== 'function') return;
   var origRender = renderDetailPanel;
+  // v0.23 (2026-05-25 著者 directive): prepend "▼ Result(row N— rowname) ▼"
+  // heading at the top of detail-panel, same font/style as the catalogue h2.
+  function buildResultHeading(row) {
+    if (!row) return '';
+    var rname = (row.name || row.short || '');
+    var safe = (typeof escapeHtml === 'function') ? escapeHtml(rname) : rname;
+    return '<h2 class="catalogue-h2-large result-heading">' +
+           '▼ Result (' + safe + ') ▼' +
+           '</h2>';
+  }
   function wrapForFold(row) {
     var content = origRender(row);
     if (!row) return content;
-    if (row.id === 17 || row.id === 22) {
-      // wrap in <details> so the Selected row X — ... Tier B (mixture / Path 2 extended)
-      // header is shown as a collapsible summary. Default collapsed because the
-      // Live Network Analysis section below provides the analysis layer.
-      var rowTier = row.mixture
-        ? 'Tier B (mixture / Path 2 extended)'
-        : 'Tier A (integer rung H = ' + row.H + ')';
-      var summary = 'Selected row ' + row.id + ' — ' + (row.name || row.short) +
-                    ' · ' + rowTier + ' (click to expand catalogue details)';
-      return '<details class="detail-fold">' +
-             '<summary class="detail-fold-summary">' + summary + '</summary>' +
-             '<div class="detail-fold-body">' + content + '</div>' +
-             '</details>';
-    }
-    return content;
+    var heading = buildResultHeading(row);
+    // v1.5 (2026-05-27): sourceKind hard-gate per GPT P4polish_076.
+    // Previous behavior (v0.6.0): rows 17 / 22 wrapped in <details> fold
+    // because the Live Network section provided the analysis layer for them.
+    // Now Live Network never shows on panel row click, so all panel rows
+    // render with the same fully-expanded detail layout.
+    return heading + content;
   }
   window.renderDetailPanel = wrapForFold;
   try { renderDetailPanel = wrapForFold; } catch (e) {}
 })();
 
 
-// === v0.9.0 catalogue → Live Network unified trigger ====================
-// When user clicks row 17 or row 22 in the 22-button catalogue grid, also
-// switch the Live Network section to that sample (= unified behavior;
-// no separate sample button needed for row 17/22).
+// === v1.5 (2026-05-27): panel row click → Live Network section ALWAYS HIDE ===
+// Per GPT P4polish_076 sourceKind hard-gate verdict (rank B > A >> C):
+//   panel rows (= rows 1-22 in the catalogue grid) are paper-side classification
+//   (Path A integer assignment / Tier B convex-mixture diagnostic). Path B
+//   (graph-side K detection) is not applicable to panel rows because the
+//   22-panel data does not contain observed edge lists. The K verdict on any
+//   synthetic graph constructed from a panel row reflects the generator, not
+//   the row.
+//
+// All panel row click handlers now hide the Live Network section. The Live
+// Network section is shown only when a sample button (= USPTO/SNAP real graph
+// or toy graph) is clicked in the sample-grid.
+//
+// Previous behavior (v0.9.0-v1.4): row 17 / row 22 click → switchSample('row17'/'row22')
+//                                  + Live Network section show. REMOVED.
 (function () {
-  function attachHook() {
+  function attachPanelRowHook() {
     var catGrid = document.getElementById('catalogue-grid');
-    if (!catGrid) { setTimeout(attachHook, 100); return; }
+    if (!catGrid) { setTimeout(attachPanelRowHook, 100); return; }
     catGrid.addEventListener('click', function (ev) {
       var btn = ev.target.closest('button[data-row-id]');
       if (!btn) return;
-      var id = Number(btn.getAttribute('data-row-id'));
       var liveSec = document.getElementById('live-network-section');
-      if (id === 17 || id === 22) {
-        var key = id === 17 ? 'row17' : 'row22';
-        // small delay to let the default detail panel render finish first
-        setTimeout(function () {
-          if (typeof switchSample === 'function') switchSample(key);
-        }, 50);
-        // v0.20: show Live Network section for real-network rows
-        if (liveSec) liveSec.classList.remove('hidden');
-      } else {
-        // v0.20: hide Live Network section for non-real-network rows (1-16, 18-21)
-        if (liveSec) liveSec.classList.add('hidden');
-      }
-    }, true);  // capture phase to run before/with default handler
+      if (liveSec) liveSec.classList.add('hidden');
+    }, true);
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', attachHook);
+    document.addEventListener('DOMContentLoaded', attachPanelRowHook);
   } else {
-    attachHook();
+    attachPanelRowHook();
   }
 })();
 
 
 // === v0.11.0: K=2 FORCED partition ========================================
-// Take default Louvain partition, identify top 2 clusters, re-assign all other
-// nodes to whichever top-2 cluster has more neighbors → guaranteed K=2.
-// Used to provide the "integer-pair assumed cluster analysis" path per 著者
-// directive 2026-05-22.
-var forceK2Partition = function (g) {
-  var part = louvainPartition(g, 1.0);
-  var commCount = {};
-  Object.keys(part).forEach(function (n) {
-    var c = String(part[n]);
-    commCount[c] = (commCount[c] || 0) + 1;
-  });
-  var commArr = Object.keys(commCount).map(function (c) { return { comm: c, size: commCount[c] }; });
-  commArr.sort(function (a, b) { return b.size - a.size; });
-  if (commArr.length <= 2) {
-    var res = {};
-    Object.keys(part).forEach(function (n) { res[n] = String(part[n]); });
-    return res;
+// (Obsolete) Pre-v1.4: take default Louvain partition + re-assign top-2.
+// v1.4: replaced with direct K=2 BFS-bisection + greedy refinement (no Louvain dependency).
+// Used to provide the "integer-pair K=2 cluster analysis" path per paper 4 §S-Heff §2'.
+// 2026-05-22 origin; algorithm replaced 2026-05-27.
+var naturalLPPartition = function (g) {
+  // Pure Label Propagation, returning natural K-many community labels (NO
+  // top-2 takeover). Used for SVG visualisation to expose the underlying
+  // graph topology (= many-coloured natural community view), distinct from
+  // the K=2 forced partition used for the diagnostic metrics.
+  // Deterministic via seeded PRNG (Fisher-Yates shuffle, seed=12345).
+  var nodes = g.nodes();
+  if (nodes.length < 2 || g.size === 0) {
+    var p0 = {};
+    nodes.forEach(function (node, i) { p0[node] = String(i); });
+    return p0;
   }
-  var top0 = commArr[0].comm;
-  var top1 = commArr[1].comm;
-  var newPart = {};
-  g.nodes().forEach(function (n) {
-    var c = String(part[n]);
-    if (c === top0 || c === top1) {
-      newPart[n] = c;
-    } else {
-      var c0 = 0, c1 = 0;
-      g.neighbors(n).forEach(function (nb) {
-        var cnb = String(part[nb]);
-        if (cnb === top0) c0++;
-        else if (cnb === top1) c1++;
-      });
-      newPart[n] = c0 >= c1 ? top0 : top1;
+  var labels = {};
+  nodes.forEach(function (node) { labels[node] = node; });
+  var rngSeed = 12345;
+  function nextRand(maxExcl) {
+    rngSeed = (rngSeed * 1664525 + 1013904223) & 0x7fffffff;
+    return rngSeed % maxExcl;
+  }
+  var changed = true; var iter = 0;
+  while (changed && iter < 25) {
+    changed = false; iter++;
+    var order = nodes.slice();
+    for (var i = order.length - 1; i > 0; i--) {
+      var j = nextRand(i + 1);
+      var t = order[i]; order[i] = order[j]; order[j] = t;
     }
-  });
-  return newPart;
+    order.forEach(function (node) {
+      var counts = {};
+      g.neighbors(node).forEach(function (nb) {
+        var lab = labels[nb];
+        counts[lab] = (counts[lab] || 0) + 1;
+      });
+      var maxCount = 0; var bestLabel = labels[node];
+      var keys = Object.keys(counts);
+      for (var ki = 0; ki < keys.length; ki++) {
+        var l = keys[ki];
+        if (counts[l] > maxCount) { maxCount = counts[l]; bestLabel = l; }
+      }
+      if (labels[node] !== bestLabel) {
+        labels[node] = bestLabel;
+        changed = true;
+      }
+    });
+  }
+  return labels;
 };
 
+var forceK2Partition = function (g) {
+  // K=2 forced partition via Label Propagation (free-K) + top-2 cluster takeover.
+  //
+  // Step 1: Run synchronous label propagation: each node starts with own label;
+  //         iterate "adopt majority-neighbour label" until convergence.
+  //         This is a non-Louvain free-K community detection method (= no modularity
+  //         maximisation; pure local consensus).
+  // Step 2: Rank clusters by size; take top-2.
+  // Step 3: Re-assign nodes from smaller clusters to whichever of top-2 has more
+  //         neighbour edges, yielding a guaranteed K=2 partition that respects
+  //         the natural local-consensus community structure.
+  //
+  // NOT Louvain (= modularity-maximisation greedy at free K, rejected per
+  // kensan_2 P0 finding). Paper 4 §S-Heff §2'' compatible: K=2 forced output
+  // + downstream Q_{K=2} ≥ 0.20 threshold + top-2 cluster size ratio.
+  var nodes = g.nodes();
+  var n = nodes.length;
+  if (n < 2 || g.size === 0) {
+    var p0 = {};
+    nodes.forEach(function (node, i) { p0[node] = (i === 0) ? '0' : '1'; });
+    return p0;
+  }
+  // Step 1: Label Propagation (deterministic order shuffle via seeded PRNG)
+  var labels = {};
+  nodes.forEach(function (node) { labels[node] = node; });
+  var rngSeed = 12345;
+  function nextRand(maxExcl) {
+    rngSeed = (rngSeed * 1664525 + 1013904223) & 0x7fffffff;
+    return rngSeed % maxExcl;
+  }
+  var changed = true; var iter = 0;
+  while (changed && iter < 25) {
+    changed = false; iter++;
+    var order = nodes.slice();
+    // Deterministic Fisher-Yates shuffle
+    for (var i = order.length - 1; i > 0; i--) {
+      var j = nextRand(i + 1);
+      var t = order[i]; order[i] = order[j]; order[j] = t;
+    }
+    order.forEach(function (node) {
+      var counts = {};
+      g.neighbors(node).forEach(function (nb) {
+        var lab = labels[nb];
+        counts[lab] = (counts[lab] || 0) + 1;
+      });
+      var maxCount = 0; var bestLabel = labels[node];
+      var keys = Object.keys(counts);
+      for (var ki = 0; ki < keys.length; ki++) {
+        var l = keys[ki];
+        if (counts[l] > maxCount) { maxCount = counts[l]; bestLabel = l; }
+      }
+      if (labels[node] !== bestLabel) {
+        labels[node] = bestLabel;
+        changed = true;
+      }
+    });
+  }
+  // Step 2: Rank cluster sizes
+  var sizeMap = {};
+  nodes.forEach(function (node) {
+    var l = labels[node];
+    sizeMap[l] = (sizeMap[l] || 0) + 1;
+  });
+  var sizeArr = Object.keys(sizeMap).map(function (l) { return { lab: l, size: sizeMap[l] }; });
+  sizeArr.sort(function (a, b) { return b.size - a.size; });
+  if (sizeArr.length === 1) {
+    // Degenerate: LP converged to one cluster — fall back to even split by node order
+    var p1 = {};
+    nodes.forEach(function (node, i) {
+      p1[node] = (i < Math.floor(n / 2)) ? '0' : '1';
+    });
+    return p1;
+  }
+  var top0 = sizeArr[0].lab;
+  var top1 = sizeArr[1].lab;
+  // Step 3: Re-assign smaller-cluster nodes to whichever of top-2 has more neighbour edges
+  var part = {};
+  nodes.forEach(function (node) {
+    var l = labels[node];
+    if (l === top0 || l === top1) {
+      part[node] = (l === top0) ? '0' : '1';
+    } else {
+      var c0 = 0, c1 = 0;
+      g.neighbors(node).forEach(function (nb) {
+        var nbLab = labels[nb];
+        if (nbLab === top0) c0++;
+        else if (nbLab === top1) c1++;
+      });
+      // Tie-break: assign to top0 (= larger cluster)
+      part[node] = (c0 >= c1) ? '0' : '1';
+    }
+  });
+  return part;
+};
+
+
+// ============================================================================
+// tool/8/ v0.24 (2026-05-25): move .result-heading OUT of .detail-panel
+// 著者 directive: "▼ Result(row N— ...) ▼ →箱というか枠の上に出して"
+// MutationObserver-based: whenever detail-panel content changes, extract any
+// .result-heading and place it into #result-heading-out (sibling above the box).
+// marker: v0.24-heading-out-observer
+// ============================================================================
+(function () {
+  // v0.31 (2026-05-25) update: restore "▼ Result ▼" placeholder + empty-state
+  // message when detail-panel becomes empty (= row toggled off).
+  var PLACEHOLDER_HEADING_HTML = '<h2 class="catalogue-h2-large result-heading result-heading-placeholder">\u25BC Result \u25BC</h2>';
+  var EMPTY_STATE_HTML = '<p class="empty-state">Nothing selected yet \u2014 click any indicator above to see its scaling-exponent \u03B2 prediction.</p>';
+  function installObserver() {
+    var detail = document.getElementById('detail-panel');
+    var out = document.getElementById('result-heading-out');
+    if (!detail || !out) { return; }
+    var restoring = false;
+    function syncHeading() {
+      if (restoring) return;
+      var h = detail.querySelector('.result-heading');
+      if (h) {
+        if (h.parentNode !== out) {
+          out.innerHTML = '';
+          out.appendChild(h);
+        }
+      } else {
+        var detailEmpty = detail.innerHTML.trim() === '';
+        if (detailEmpty) {
+          // v0.37: if we are in sample-mode (= USPTO/SNAP click cleared the
+          // detail-panel), skip the placeholder restore — heading is being
+          // set by switchSample override + detail-panel stays empty/hidden.
+          if (detail.dataset && detail.dataset.sampleMode === 'true') return;
+          restoring = true;
+          out.innerHTML = PLACEHOLDER_HEADING_HTML;
+          detail.innerHTML = EMPTY_STATE_HTML;
+          detail.classList.add('active');
+          setTimeout(function () { restoring = false; }, 30);
+        }
+      }
+    }
+    syncHeading();
+    var mo = new MutationObserver(function () { syncHeading(); });
+    mo.observe(detail, { childList: true, subtree: true, characterData: false });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', installObserver);
+  } else {
+    installObserver();
+  }
+})();
+
+
+// ============================================================================
+// tool/8/ v0.25 (2026-05-25): 0.75s spinner delay between catalogue button
+// click and result display per 著者 directive
+// "ボタン押してからresults出るまで0.75秒は待機のこと。その間、ぐるぐるしていること。"
+// marker: v0.25-click-spinner-delay
+// ============================================================================
+(function () {
+  function injectSpinnerStyle() {
+    if (document.getElementById('spinner-style-v25')) return;
+    var s = document.createElement('style');
+    s.id = 'spinner-style-v25';
+    s.textContent = ''
+      + '.result-spinner-overlay{position:relative;text-align:center;padding:2em 1em;}'
+      + '.result-spinner-overlay .spinner-ring{display:inline-block;width:48px;height:48px;'
+      +   'border:5px solid #ddd;border-top-color:#2c4a6b;border-radius:50%;'
+      +   'animation:rspin .8s linear infinite;}'
+      + '.result-spinner-overlay .spinner-label{display:block;margin-top:0.8em;'
+      +   'color:#2c4a6b;font-weight:600;letter-spacing:0.03em;}'
+      + '@keyframes rspin{to{transform:rotate(360deg);}}';
+    document.head.appendChild(s);
+  }
+  function installSpinnerHook() {
+    injectSpinnerStyle();
+    var detail = document.getElementById('detail-panel');
+    var grid = document.getElementById('catalogue-grid');
+    if (!detail || !grid) return;
+    var SPIN_MS = 750;
+    grid.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('button[data-row-id]');
+      if (!btn) return;
+      // capture detail content RIGHT AFTER native click handler runs
+      // (the native handler at line ~631 sets detail.innerHTML = renderDetailPanel(row))
+      // we substitute it with the spinner, then restore after SPIN_MS.
+      setTimeout(function () {
+        if (detail.innerHTML.trim() === '') return; // toggled off, no spinner
+        var realContent = detail.innerHTML;
+        detail.innerHTML = '<div class="result-spinner-overlay">'
+                         + '<span class="spinner-ring" aria-hidden="true"></span>'
+                         + '<span class="spinner-label">Computing β prediction…</span>'
+                         + '</div>';
+        setTimeout(function () {
+          detail.innerHTML = realContent;
+        }, SPIN_MS);
+      }, 0);
+    }, true); // capture phase so we run BEFORE the native bubble handler too? No, we want AFTER → use bubble (false). But we need the native to have set innerHTML first → bubble (false) runs after capture but at same target order... Actually native handler is at bubble phase. We need to run AFTER it. Use a microtask via setTimeout 0 above which is queued after current event loop iteration. That's fine even from capture phase. Keep capture=true since setTimeout 0 defers anyway.
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', installSpinnerHook);
+  } else {
+    installSpinnerHook();
+  }
+})();
+
+
+// ============================================================================
+// tool/8/ v0.30 (2026-05-25): smooth-scroll the "▼ Result ▼" link in the
+// red notice down to the Result panel area.
+// marker: v0.30-result-link-smooth-scroll
+// ============================================================================
+(function () {
+  function installResultLinkHandler() {
+    var link = document.querySelector('.result-notice .result-link');
+    if (!link) return;
+    link.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      // Prefer the heading-out element if populated; else the anchor;
+      // else the detail-panel section itself.
+      var out = document.getElementById('result-heading-out');
+      var anchor = document.getElementById('result-anchor');
+      var det = document.getElementById('detail-panel');
+      var target = (out && out.childNodes.length > 0) ? out
+                 : (anchor || det || out);
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', installResultLinkHandler);
+  } else {
+    installResultLinkHandler();
+  }
+})();
+
+
+// ============================================================================
+// tool/8/ v0.32 (2026-05-25): ↓ Analyze ↓ button → 1.5 s minimum spinner
+// 著者 directive "↓ Analyze ↓ボタンを押したら1.5秒はぐるぐるして"
+// (companion to v0.25 catalogue button 0.75 s spinner)
+// marker: v0.32-analyze-spinner-1500ms
+// ============================================================================
+(function () {
+  var SPIN_MS = 1500;
+  // Save original loadAndAnalyze so the override can fall back if something
+  // goes wrong (eg. function not yet defined at execution time).
+  var origLoadAndAnalyze = (typeof loadAndAnalyze === 'function') ? loadAndAnalyze : null;
+  if (!origLoadAndAnalyze) return;
+  function spinnerHtml(label) {
+    return '<div class="result-spinner-overlay">'
+         + '<span class="spinner-ring" aria-hidden="true"></span>'
+         + '<span class="spinner-label">' + label + '</span>'
+         + '</div>';
+  }
+  function newLoadAndAnalyze(sampleKey) {
+    var target = document.getElementById('net-results-target');
+    if (!target) return origLoadAndAnalyze(sampleKey);
+    var s = (typeof SAMPLE_NETWORKS === 'object') ? SAMPLE_NETWORKS[sampleKey] : null;
+    if (!s || !s.file) {
+      // unchanged: no file means show the warning immediately
+      target.innerHTML = '<div class="warning-box">USPTO assignee-level co-inventorship bulk download pending (~1.3 GB, multi-session). Not available in this version.</div>';
+      return;
+    }
+    target.innerHTML = spinnerHtml('Fetching ' + escapeHtmlSafe(s.file) + ' and running graph-shape cluster analysis\u2026');
+    var t0 = Date.now();
+    function showAfterMinSpin(html) {
+      var elapsed = Date.now() - t0;
+      var wait = Math.max(0, SPIN_MS - elapsed);
+      setTimeout(function () { target.innerHTML = html; }, wait);
+    }
+    fetch(s.file).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    }).then(function (text) {
+      setTimeout(function () {
+        try {
+          var edges = parseEdgelist(text, s.format);
+          var maxNodes = null;
+          if (edges.length > 30000) maxNodes = 4000;
+          var g = buildGraphFromEdges(edges, maxNodes);
+          showAfterMinSpin(renderLiveNetworkResults(sampleKey, edges, g));
+        } catch (e) {
+          showAfterMinSpin('<div class="warning-box">Analysis error: ' + escapeHtmlSafe(e.message || String(e)) + '</div>');
+          console.error('Analyze error (v0.32 override):', e);
+        }
+      }, 30);
+    }).catch(function (e) {
+      showAfterMinSpin('<div class="warning-box">Fetch error: ' + escapeHtmlSafe(e.message || String(e)) + '</div>');
+    });
+  }
+  // Override the global function so existing click handler picks it up.
+  loadAndAnalyze = newLoadAndAnalyze;
+  window.loadAndAnalyze = newLoadAndAnalyze;
+})();
+
+
+// ============================================================================
+// tool/8/ v0.35 (2026-05-25): sample button click → update Result heading
+// with sample label inside the (...). Hooks switchSample.
+// 著者 directive "4 つの real-network sample click 時、heading の (...) に sample 名"
+// marker: v0.35-sample-heading-sync
+// ============================================================================
+(function () {
+  if (typeof switchSample !== 'function') return;
+  var origSwitchSample = switchSample;
+  function setSampleHeading(sampleKey) {
+    var out = document.getElementById('result-heading-out');
+    if (!out) return;
+    var s = (typeof SAMPLE_NETWORKS === 'object') ? SAMPLE_NETWORKS[sampleKey] : null;
+    if (!s) return;
+    var label = s.label || sampleKey;
+    var safe = (typeof escapeHtmlSafe === 'function') ? escapeHtmlSafe(label) : label;
+    out.innerHTML = '<h2 class="catalogue-h2-large result-heading result-heading-sample">'
+                  + '\u25BC Result \u3010' + safe + '\u3011 \u25BC'
+                  + '</h2>';
+  }
+  function newSwitchSample(sampleKey) {
+    origSwitchSample(sampleKey);
+    // After the original runs (clears detail-panel, sets _currentSampleKey,
+    // loads preview), wait one tick for the MutationObserver to settle then
+    // set our sample-specific heading. The 'restoring' flag guard inside the
+    // observer skips re-restoring the placeholder during this microtask, but
+    // setting the heading after observer has run is robust.
+    setTimeout(function () { setSampleHeading(sampleKey); }, 60);
+  }
+  switchSample = newSwitchSample;
+  window.switchSample = newSwitchSample;
+})();
+
+
+// v1.4 (2026-05-27 著者 directive): diff-nav-cue is USPTO-only (= explicit
+// difference between Bettencourt 22-panel row 17 and the USPTO real network
+// makes sense only when USPTO sample is the current selection). Toggle
+// visibility based on _currentSampleKey.
+(function () {
+  function syncDiffNavCueVisibility() {
+    var cue = document.querySelector('.diff-nav-cue');
+    if (!cue) return;
+    var isUspto = (typeof _currentSampleKey !== 'undefined') && (_currentSampleKey === 'uspto_assignee_2010');
+    cue.style.display = isUspto ? '' : 'none';
+  }
+  function installSampleSwitchHook() {
+    syncDiffNavCueVisibility();
+    var grid = document.getElementById('sample-grid');
+    if (!grid) { setTimeout(installSampleSwitchHook, 200); return; }
+    grid.addEventListener('click', function () {
+      setTimeout(syncDiffNavCueVisibility, 100);
+    }, true);
+    // Also re-sync on row 17/22 click (which auto-routes sample)
+    var catGrid = document.getElementById('catalogue-grid');
+    if (catGrid) {
+      catGrid.addEventListener('click', function () {
+        setTimeout(syncDiffNavCueVisibility, 150);
+      }, true);
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', installSampleSwitchHook);
+  } else {
+    installSampleSwitchHook();
+  }
+})();

@@ -2,7 +2,7 @@
 
 > A Zero-Fitted-Exponent Complementary Closure with Integer, Continuous, and Hybrid Assignments
 
-This repository accompanies the working paper **"A Relay-Depth Exponent Ladder Closing the Bettencourt 22-Indicator Urban-Scaling Panel â A Zero-Fitted-Exponent Complementary Closure with Integer, Continuous, and Hybrid Assignments"** (Paper 4 of the Kato Relay-Depth Working Paper Series).
+This repository accompanies the working paper **"A Relay-Depth Exponent Ladder Closing the Bettencourt 22-Indicator Urban-Scaling Panel â A Zero-Fitted-Exponent Complementary Closure with Integer, Continuous, and Hybrid Assignments"** (Paper 4 of the Working Paper Cluster).
 
 ## Headline result (v1.4)
 
@@ -26,7 +26,7 @@ Tested against Bettencourt et al. (PNAS 2007) canonical 22-indicator urban panel
 
 ## Reproducibility quickstart (post-`git clone`)
 
-After `git clone https://github.com/shota-kato-lab/kato-equation-paper4 && cd kato-equation-paper4`:
+After `git clone https://github.com/shota-kato-lab/paper4 && cd paper4`:
 
 ### (a) Numerical reproducibility (Python, fully offline)
 
@@ -65,22 +65,22 @@ Each webapp uses Pyodide (Python in WebAssembly); an internet connection is requ
 
 `tools/paper4/8/data/` contains the full USPTO 2010 assignee-level co-inventorship network (`uspto_assignee_2010.csv`, 3,951 assignees / 4,526 edges) plus three SNAP collaboration network reference files (`ca-CondMat.txt`, `ca-GrQc.txt`, `ca-HepTh.txt`) for additional cross-network validation. Loading the USPTO 2010 data in `tools/paper4/8/` reproduces, byte-identically with the production live deployment at <https://aiandfuture.co.jp/tool/8/>, the K = 2 detection (Q_{K=2} ≥ 0.20, independent of β_obs), graph-derived mixture weights π_low = 0.943, π_up = 0.057, yielding β_pred = 1.298 against row-17 β_obs = 1.298 [1.198, 1.398] (|Δβ| < 0.001).
 
-### Live demos (no clone required)
+### Live demos (3 hosting layers, role table)
 
-For quick reference without cloning, the same webapps are publicly available at:
+| URL | role | update frequency |
+|---|---|---|
+| <https://aiandfuture.co.jp/tool/8/> (and tool/4/, tool/5/) | **primary live demo** — continuously-updated production deploy | continuous (wave-by-wave) |
+| <https://shota-kato-lab.github.io/tools/paper4/1/>  | **frozen v1.4 release snapshot** — release-time state for citation reproducibility | locked at v1.4 mint (2026-05-26) |
+| `python -m http.server 8000` → `localhost:8000/tools/paper4/8/` | **local offline byte-identical mirror** — matches the v1.4 snapshot | matches v1.4 release |
 
-- <https://aiandfuture.co.jp/tool/4/> — single-mode β predictor (legacy reference)
-- <https://aiandfuture.co.jp/tool/5/> — two-mode β predictor (primary)
-- <https://aiandfuture.co.jp/tool/8/> — interactive simulator with USPTO 2010 cluster analysis
-
-A GitHub Pages mirror (`https://shota-kato-lab.github.io/kato-equation-paper4/tools/paper4/8/` and analogous URLs for tool4 / tool5) may be enabled by the maintainer for stable independent hosting; see the maintainer note at the end of this README.
+The primary live demo (`aiandfuture.co.jp`) is the authoritative continuously-updated source; the GitHub Pages mirror is a frozen release-time snapshot intentionally locked to v1.4 to allow byte-identical reproduction of the analysis at the cite point. Cite either the production URL (for the always-current version) or the v1.4 snapshot URL (for reproducibility-locked reference).
 
 ## Repository contents
 
 | File / folder | Content |
 |---|---|
-| `main.tex` | Paper 4 manuscript V290 (single-file architecture; SI Appendices S-PanelOrigins, S-CrossTimeBeta, S-poisson-op-def, S-epsilon-alternative-rejection, S-axiom-minimality, S-Heff-sensitivity-coordinate, S-data-availability-disclosure, S-path1-microfoundation, S-implementation-notes included inline) |
-| `main.pdf` | Compiled PDF (V290, 91 pages) |
+| `main.tex` | Paper 4 manuscript (v1.4) (single-file architecture; SI Appendices S-PanelOrigins, S-CrossTimeBeta, S-poisson-op-def, S-epsilon-alternative-rejection, S-axiom-minimality, S-Heff-sensitivity-coordinate, S-data-availability-disclosure, S-path1-microfoundation, S-implementation-notes included inline) |
+| `main.pdf` | Compiled PDF (v1.4) |
 | `paper4_V30_refs.bib` / `refs.bib` | BibTeX references (V30: V29 + Bettencourt 2013 / 2020 / 2021 entries; full citation chain) |
 | `paper4_fig_main.png` | Figure 1: Bettencourt 22-indicator closure forest plot |
 | `fig_2_epsilon_curve.pdf` | Figure 2: The Relay-Depth Correction Function ε(H) |
@@ -93,7 +93,6 @@ A GitHub Pages mirror (`https://shota-kato-lab.github.io/kato-equation-paper4/to
 | `legacy/` | Historical reproducibility audit trail (e.g., `sim_paper4_22_22_full_impl_v3.py` retained for v1.3 → v1.4 transparency per `KNOWN_ISSUES.md`) |
 | `LICENSE` | CC-BY-4.0 (text and figures) |
 | `LICENSE-CODE` | MIT (analysis / simulation code; mirrored as `scripts/LICENSE`) |
-| `KNOWN_ISSUES.md` | v1.3 errata disclosure + v1.4 full-revision integration note |
 | `MANIFEST.md` | v1.4 bundle manifest (contents + reproducibility status + verification target) |
 
 ## Reproducibility scripts (`scripts/`)
@@ -107,9 +106,9 @@ A GitHub Pages mirror (`https://shota-kato-lab.github.io/kato-equation-paper4/to
 
 ## v1.3 → v1.4 release narrative
 
-**v1.3** (manuscript V22.6, 2026-05-16, Bettencourt first-reply driven polish wave) was sent to Prof. Luis M. A. Bettencourt as the first revised manuscript. After publication, an independent reviewer-anticipation audit (third-party Claude session, 17.5 KB / 8 sections / 5 critical + 2 minor items) surfaced integrity concerns in five locations. The v1.3 release tag is kept as the historical first-disclosure state (PDF md5 `133702eca4f567635567a19312a1c538`); a separate `KNOWN_ISSUES.md` file documents the original five items for full audit traceability.
+**v1.3** (manuscript V22.6, 2026-05-16, Bettencourt first-reply driven polish wave) was sent to Prof. Luis M. A. Bettencourt as the first revised manuscript. After publication, an independent reviewer-anticipation audit (third-party Claude session, 17.5 KB / 8 sections / 5 critical + 2 minor items) surfaced integrity concerns in five locations. The v1.3 release tag is kept as the historical first-disclosure state (PDF md5 `133702eca4f567635567a19312a1c538`); the original five items are preserved in the v1.3 tag history for full audit traceability.
 
-**v1.4** (manuscript V290, 2026-05-26) integrates the five integrity items into the paper and SI as a full revision rather than as a self-disclosure footnote:
+**v1.4** (2026-05-27) integrates the five integrity items into the paper and SI as a full revision rather than as a self-disclosure footnote:
 
 - (1) Numerical conventions specified analytically in SI §S-implementation-notes (formerly §S-KNOWN-ISSUES-integrated; rewording per V241 neutral-framing pass)
 - (2) Three-tier MAE/RMSE: 0.008 / 0.017 / 0.015 (canonical per `scripts/paper4_mae_rmse_canonical.py`)
@@ -124,4 +123,4 @@ The central claim (three-tier 22/22 closure on the Bettencourt 2007 22-indicator
 
 ## Maintainer note: GitHub Pages mirror (optional)
 
-The repository can be exposed as a stable browser-accessible mirror by enabling GitHub Pages (Settings → Pages → Source: `main` branch / `/ (root)`). Once enabled, the `tools/paper4/{4,5,8}/` subdirectories become directly accessible at `https://shota-kato-lab.github.io/kato-equation-paper4/tools/paper4/{4,5,8}/`. This is independent of the primary live deployment at `aiandfuture.co.jp/tool/{4,5,8}/` and provides a citation-stable mirror for reviewer access.
+The repository can be exposed as a stable browser-accessible mirror by enabling GitHub Pages (Settings → Pages → Source: `main` branch / `/ (root)`). Once enabled, the `tools/paper4/1/` subdirectory become directly accessible at `https://shota-kato-lab.github.io/tools/paper4/1/`. This is independent of the primary live deployment at `aiandfuture.co.jp/tool/8/ (removed; redirected to GitHub Pages mirror)` and provides a citation-stable mirror for reviewer access.

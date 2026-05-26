@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bettencourt 22-Indicator Reference Catalogue — Paper 4 Companion (tool/6/)</title>
+<link rel="stylesheet" href="style.css?v=0303">
+</head>
+<body>
+
+<header>
+  <h1>Bettencourt 22-Indicator Reference Catalogue</h1>
+  <p class="subtitle">with Paper&nbsp;4 Zero-Fitted-Exponent Ladder Predictions</p>
+  <p class="tagline">
+    Click any indicator. <strong>No input. No fitting.</strong> Direct display of
+    Bettencourt&nbsp;2007 observed β<sub>obs</sub> and the Paper&nbsp;4 ladder β<sub>pred</sub>
+    at the structurally-assigned <em>H</em> per V261&nbsp;§S-PanelOrigins.
+  </p>
+
+  <details class="theory-disclosure" open>
+    <summary>What is this? <span class="disclosure-arrow">▾</span></summary>
+    <div class="theory-content">
+      <p>
+        This page is a static <strong>reference catalogue</strong> of the 22 indicators in
+        the Bettencourt 2007 urban-scaling panel, paired with the Paper&nbsp;4 ladder
+        formula
+      </p>
+      <p class="formula">
+        β = 1 ± 1 / [<em>H</em> · ln(2<em>H</em> + 1)],&nbsp;&nbsp; <em>H</em> ∈ ℕ
+      </p>
+
+      <!-- F. Nested disclosure (default COLLAPSED, centered, max-width 720px).
+           Content aligned with /tool/4/'s "What is the scaling exponent β..."
+           disclosure, dropping Path A/B-specific paragraphs (this tool has
+           neither path).  No 【】 / "count" wording in this section per
+           author chat request 2026-05-22 — the 【】 chain explanation lives
+           only inside the per-row detail panels. -->
+      <details class="formula-explainer-details">
+        <summary>What is the scaling exponent β and how is it predicted? <span class="disclosure-arrow">▾</span></summary>
+        <div class="formula-explainer-content">
+          <p>
+            <strong>β</strong> is a number describing how a city-level indicator
+            (e.g., GDP, patent filings, total road length, gasoline consumption)
+            scales with city population at a single point in time. If a city has
+            10× the population of another, the indicator is approximately
+            10<sup>β</sup> times larger (e.g., β = 1.1 ⇒ about 12.6× larger).
+            This is <em>not</em> a year-over-year growth rate, but a
+            cross-sectional comparison between cities of different sizes.
+          </p>
+          <p>
+            <strong>Notation</strong>: β<sub>pred</sub> = ladder prediction
+            (does <em>not</em> use β<sub>obs</sub>). β<sub>obs</sub> =
+            observation value computed from per-city indicator data
+            (<em>N</em>, <em>Y</em>).
+          </p>
+          <p class="explainer-section-head">Foundational theory: Scaling Exponent Hierarchy Law (author's original framework)</p>
+          <p class="formula">β = 1 ± 1 / [<em>H</em> · ln(2<em>H</em> + 1)],&nbsp;&nbsp; <em>H</em> ∈ ℕ</p>
+          <p>
+            <strong><em>H</em> ∈ {1, …, 8}</strong> = relay-depth steps. The
+            number of intermediate hops that people, information, and money
+            traverse when coordinating within a city. <em>H</em> = 1
+            corresponds to direct, simple coordination; <em>H</em> = 8
+            represents a deeply stacked hierarchical structure.
+          </p>
+          <p>
+            The integer <em>H</em> and the sign (±) are mathematically
+            determined uniquely by the type of network (city, biological,
+            quantum, etc.) and the physical constraints of the substrate.
+            <strong>No coefficient fitting is performed against observed
+            data.</strong>
+          </p>
+          <p>
+            A single relay-depth law connecting integer hierarchy depth
+            <em>H</em> and scaling exponent β. The constraint
+            <em>H</em>&nbsp;∈&nbsp;ℕ expresses that hierarchy depth is driven
+            by human population <em>N</em>.
+          </p>
+        </div>
+      </details>
+
+      <p>
+        For each indicator, the catalogue displays the author's structural assignment
+        (industry classification, branch sign, relay-depth <em>H</em>) per Paper 4 V261
+        §S-PanelOrigins together with the observed β<sub>obs</sub> 95% CI from the
+        Bettencourt 2007 PNAS supplement (Table S1). No coefficient is fitted to data.
+        No <em>H</em> is inferred from a graph or from an (<em>N</em>, <em>Y</em>) panel.
+      </p>
+      <p>
+        Five rows (gasoline sales, gasoline stations, AIDS deaths, inventors, and the
+        Bettencourt 2007 legacy patents panel) are reported under the Tier B
+        mixing-coordinate framework of Paper 4 V262 §S-Heff §3: the integer pair
+        <em>H</em>&nbsp;∈&nbsp;{2, 3} cluster mixture supplies a continuous coordinate
+        H<sub>eff</sub>, and the catalogue reports the corresponding bracketing
+        interval. The mixing weights π are <strong>barycentric weights solved
+        backwards from β<sub>obs</sub></strong> on the pre-specified integer pair —
+        an <em>ex post</em> diagnostic, <strong>not</strong> an independent
+        derivation. Each Tier B row's detail panel surfaces this explicitly.
+      </p>
+    </div>
+  </details>
+
+  <details class="theory-disclosure honesty-disclosure" open>
+    <summary>What this tool is <em>not</em> <span class="disclosure-arrow">▾</span></summary>
+    <div class="theory-content">
+      <p>
+        <strong>No user input.</strong> There is no CSV upload, no textarea, no drop zone,
+        no parameter pulldown. All 22 rows are hard-coded from Paper&nbsp;4 V261/V262
+        SI appendices. The tool does not classify networks, does not estimate <em>H</em>,
+        and does not fit any exponent.
+      </p>
+      <p>
+        <strong>No graph alone → <em>H</em> inference.</strong> The same dense network can
+        correspond to patents (<em>H</em>=2) or supercreative employment (<em>H</em>=3);
+        recovering <em>H</em> from a bare adjacency list is structurally ill-posed.
+        Paper&nbsp;4's 22-row assignment is the author's domain reasoning over network
+        type, substrate constraint, and branch direction — recorded here as a
+        catalogue, not derived live.
+      </p>
+      <p>
+        <strong>Tool role.</strong> This is a <em>disclosure visualisation</em> of the
+        Paper&nbsp;4 ladder closure on the Bettencourt 22-panel. It is not a validator
+        of arbitrary input networks.
+      </p>
+      <p>
+        <strong>Predecessor tools (preserved unchanged for historical reference):</strong>
+        <a href="https://aiandfuture.co.jp/tool/4/" target="_blank" rel="noopener noreferrer">/tool/4/</a>
+        (v0.1.21, Path A/B auto-classify + 22 samples) and
+        <a href="https://aiandfuture.co.jp/tool/5/" target="_blank" rel="noopener noreferrer">/tool/5/</a>
+        (v0.2, Mode 1 network input + Mode 2 (<em>N</em>, <em>Y</em>) panel input). The
+        output of those tools' auto-classify path should be treated as superseded.
+      </p>
+    </div>
+  </details>
+
+  <p class="version">
+    v0.3.3 · Paper&nbsp;4 companion · <a href="#sources">sources</a> · <a href="#about">about</a>
+  </p>
+</header>
+
+<hr class="header-sep">
+
+<main>
+
+<section id="catalogue" aria-label="22-indicator reference catalogue">
+  <h2>22-indicator catalogue</h2>
+  <p class="grid-legend">
+    <span class="legend-swatch integer"></span> Tier A integer-rung (17 rows)
+    &nbsp;&nbsp;
+    <span class="legend-swatch mixture"></span> Tier B mixture / Path 2 extended (5 rows)
+    &nbsp;&nbsp;
+    <span class="legend-note">Per-cell meta: <em>network</em> / <em>branch</em> / <em>H</em>.
+    Click a cell to expand details.</span>
+  </p>
+
+  <div id="catalogue-grid" class="grid" role="list">
+    <!-- 22 buttons injected by app.js -->
+  </div>
+</section>
+
+<section id="detail" aria-live="polite">
+  <div id="detail-panel" class="detail-panel">
+    <!-- Per-row pre-canned reference detail injected by app.js on click. -->
+  </div>
+</section>
+
+<section id="sources">
+  <h2>Sources</h2>
+  <ul class="sources-list">
+    <li>
+      Paper 4 main manuscript (V264), §S-PanelOrigins (SI Appendix Table 3) and §S-Heff §3
+      (Tier B mixing-coordinate diagnostic table). The 22 rows here are the verbatim
+      structural assignment per V261 §S-PanelOrigins.
+    </li>
+    <li>
+      Bettencourt et al. 2007, <em>PNAS</em> 104, 17, 7301–7306 — supplement Table&nbsp;S1
+      (observed β<sub>obs</sub> + 95% CI, n ≈ 378 MSAs):
+      <a href="https://www.pnas.org/doi/10.1073/pnas.0610172104" target="_blank" rel="noopener noreferrer">https://www.pnas.org/doi/10.1073/pnas.0610172104</a>.
+    </li>
+    <li>
+      Per-row primary data sources (FHWA, EIA, US Census CBP/ACS, BLS QCEW/OEWS, FDIC SOD,
+      USPTO PatentsView, OECD MSA, US BEA Regional GDP, NSF SESTAT/SED, CDC NCHHSTP
+      AtlasPlus, FBI UCR, USGS, OPIS) — see each per-row detail panel for the canonical URL.
+    </li>
+    <li>
+      Per-row source URL catalogue (Paper 4 internal):
+      <code>real_N_Y_panel_data_source_catalog_V1_2026-05-20.md</code> in the Paper 4 notes directory.
+    </li>
+  </ul>
+</section>
+
+<section id="about">
+  <h2>About</h2>
+  <p>
+    <strong>Paper&nbsp;4</strong> — “A Relay-Depth Exponent Ladder Closing the
+    Bettencourt 22-Indicator Urban-Scaling Panel”. A zero-fitted-exponent
+    complementary closure with integer, continuous, and hybrid assignments.
+  </p>
+
+  <p class="zenodo-button-wrap">
+    <a class="zenodo-button"
+       href="https://doi.org/10.5281/zenodo.20145297"
+       target="_blank"
+       rel="noopener noreferrer">
+      Public on Zenodo (DOI: 10.5281/zenodo.20145297)
+      <svg class="zenodo-button-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           aria-hidden="true" focusable="false">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        <polyline points="15 3 21 3 21 9"/>
+        <line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+    </a>
+  </p>
+
+  <p>
+    The ladder formula is
+    β = 1 ± 1 / [<em>H</em> · ln(2<em>H</em> + 1)] with integer <em>H</em>;
+    the branch sign (±) is determined by the indicator's network type and substrate
+    constraint (physical infrastructure ⇒ −, socio-economic coordination ⇒ +,
+    hybrid ⇒ context-dependent). For each row of the Bettencourt 22-panel the
+    structural assignment of (network type, substrate, branch, <em>H</em>) is
+    recorded by the author in V261 §S-PanelOrigins. This catalogue exposes that
+    assignment row by row, with the relay chain made explicit in the per-row
+    detail panel as a sequence of 【】 boxes whose count equals <em>H</em>.
+  </p>
+  <p>
+    <strong>Source code:</strong>
+    <span id="github-footer-placeholder">
+      GitHub repository URL pending publication
+      (<code>universal-beta-predictor</code>; coordinator role held by Paper 4 main
+      session, post-publication fill).
+    </span>
+  </p>
+  <p>
+    Tool URL: <a href="https://aiandfuture.co.jp/tool/6/" target="_blank" rel="noopener noreferrer">https://aiandfuture.co.jp/tool/6/</a>
+    — ★Paper4_β_predictor_3 fresh redesign (this page).<br>
+    Legacy tools (preserved unchanged):
+    <a href="https://aiandfuture.co.jp/tool/4/" target="_blank" rel="noopener noreferrer">/tool/4/</a> (v0.1.21)
+    and
+    <a href="https://aiandfuture.co.jp/tool/5/" target="_blank" rel="noopener noreferrer">/tool/5/</a> (v0.2).
+  </p>
+</section>
+
+</main>
+
+<footer>
+  <p>
+    Paper 4 V264 reference. No user fitting. 22 rows pre-canned per V261 §S-PanelOrigins.
+    Bettencourt observed β<sub>obs</sub> from PNAS 2007 supplement Table S1.
+    Paper 4 ladder formula β = 1 ± 1 / [<em>H</em> · ln(2<em>H</em> + 1)] at structurally-
+    assigned <em>H</em>.
+  </p>
+</footer>
+
+<script src="app.js?v=0303"></script>
+</body>
+</html>

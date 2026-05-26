@@ -1,0 +1,4 @@
+test line 1
+test line 2 - this is a test file to verify Write tool behavior on FUSE mount
+test line 3 - if this file shows full content via bash, FUSE mount works for fresh files
+test line 4 - end of test
